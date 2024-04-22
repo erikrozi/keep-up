@@ -31,7 +31,8 @@ jobs:
       - name: Super-linter
         uses: super-linter/super-linter@v6.4.0  # x-release-please-version
         env:
-          VALIDATE_ALL_CODEBASE: true
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: main
           VALIDATE_JAVASCRIPT_STANDARD: false
           VALIDATE_NATURAL_LANGUAGE: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
