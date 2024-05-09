@@ -3,6 +3,8 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
 import { auth, db, logout } from "../firebase";
 import { query, collection, getDocs, where } from "firebase/firestore";
+import { Button } from "../components/ui/button.tsx";
+import { PaperContainer } from "../components/ui/paper-container.tsx";
 
 function Dashboard() {
   const [user, loading] = useAuthState(auth);
@@ -32,10 +34,12 @@ function Dashboard() {
         Logged in as
          <div>{name}</div>
          <div>{user?.email}</div>
-         <button className="dashboard__btn" onClick={logout}>
+         <Button className="dashboard__btn" onClick={logout}>
           Logout
-         </button>
+         </Button>
        </div>
+
+        <PaperContainer />
      </div>
   );
 }
