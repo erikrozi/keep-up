@@ -29,7 +29,7 @@ function Dashboard() {
     fetchUserName();
   }, [user, loading, navigate]);
   return (
-    <div className="dashboard">
+    <div className="bg-royal-blue-300 min-h-screen">
        <div className="dashboard__container">
         Logged in as
          <div>{name}</div>
@@ -39,6 +39,9 @@ function Dashboard() {
          </Button>
        </div>
 
+        <PaperContainer />
+        <PaperContainer />
+        <PaperContainer />
         <PaperContainer />
      </div>
   );
