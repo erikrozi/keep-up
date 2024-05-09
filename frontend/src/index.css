@@ -75,6 +75,17 @@
     }
   } 
 
+/*TODO: */
+/* .dashboard__container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  text-align: left;
+  padding: 1em 20px 1em 20px;
+  color: white;
+  font-weight: bold;
+} */
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
