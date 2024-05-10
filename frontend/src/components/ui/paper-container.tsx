@@ -6,7 +6,7 @@ import { ThumbsUp, Bookmark } from "lucide-react"
 
 const PaperContainer: React.FC = () => {
     return (
-        <div className="bg-card shadow-lg rounded-lg p-6 mx-12 my-5">
+        <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6">
             <div className="flex justify-between items-center">
                 <h1 className="text-4xl font-bold mb-4">LORA: Low-Rank Adaptation of Large Language Models</h1>
                 <div className="flex space-x-1">
