@@ -1,11 +1,12 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Badge } from "./badge.tsx"
 import { Button } from "./button.tsx"
 import { ThumbsUp, Bookmark } from "lucide-react"
 
 const PaperContainer: React.FC = () => {
     return (
-        <div className="bg-white outline outline-1 shadow-lg rounded-lg p-6 mx-8 my-5">
+        <div className="bg-card shadow-lg rounded-lg p-6 mx-12 my-5">
             <div className="flex justify-between items-center">
                 <h1 className="text-4xl font-bold mb-4">LORA: Low-Rank Adaptation of Large Language Models</h1>
                 <div className="flex space-x-1">
@@ -20,27 +21,46 @@ const PaperContainer: React.FC = () => {
                     </Button>
                 </div>
             </div>
-            
-            <div className="flex flex-wrap mb-4 space-x-2">
-                <Badge variant="secondary">Edward Hu</Badge>
-                <Badge variant="secondary">Yelong Shen</Badge>
-                <Badge variant="secondary">Phillip Wallis</Badge>
-                <Badge variant="secondary">Zeyaun Allen-Zhu</Badge>
-                <Badge variant="secondary">Yuanzhi Li</Badge>
-                <Badge variant="secondary">Shean Wang</Badge>
-                <Badge variant="secondary">Lu Wang</Badge>
-                <Badge variant="secondary">Weizhu Chen</Badge>
-                {/* Add more authors here */}
+
+            <div className="flex flex-wrap mb-4 space-x-2 text-gray-500 text-xs">
+                <p>Edward Hu, Yelong Shen, Phillip Wallis, ...</p>
+                <p>•</p>
+                <p>Published on 06/17/2021</p>
+                <p>•</p>
+                <p>3345 Citations</p>
             </div>
 
             <div className="flex flex-wrap mb-4 space-x-2">
-                <Badge variant="default">Computer Science</Badge>
-                <Badge variant="default">Machine Learning</Badge>
-                <Badge variant="default">Deep Learning</Badge>
+                <Badge variant="secondary">Computer Science</Badge>
+                <Badge variant="secondary">Machine Learning</Badge>
+                <Badge variant="secondary">Deep Learning</Badge>
                 {/* Add more tags here */}
             </div>
+            <div>
+                <h2 className="text-xl font-bold mb-4">Summary</h2>
+                <div className="bg-muted p-4 mb-4 rounded-lg">
+                    <ReactMarkdown>**Low-Rank Adaptation (LoRA)** offers a feasible solution to adapt large pre-trained models like **GPT-3 175B** for specific tasks by injecting trainable rank decomposition matrices into each Transformer layer, which **reduces the trainable parameters by 10,000 times** and **GPU memory needs by 3 times**. This method **maintains or surpasses the quality** of traditional fine-tuning, offers higher training throughput, and does not add inference latency, with empirical support and tools available at [Microsoft's GitHub](https://github.com/microsoft/LoRA).
+</ReactMarkdown>
+                </div>
+                <div className= "grid grid-cols-2 gap-4">
+                    <div>
+                        <h2 className="text-xl font-bold mb-4">Credibility</h2>
+                        <div className="flex flex-wrap mb-4">
+                            <p className="mr-2 mb-2 bg-[#2B59C3] rounded-full py-2 px-4 text-m text-white font-bold">ICLR</p>
+                            <p className="mr-2 mb-2 bg-[#2B59C3] rounded-full py-2 px-4 text-m text-white font-bold">Microsoft</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-bold mb-4">Related Papers</h2>
+                        <div className="flex flex-wrap mb-4">
+                            <p className="mr-2 mb-2 bg-gray-200 hover:bg-gray-300 rounded-full py-2 px-4 text-m font-bold">Attention is All You Need</p>
+                            <p className="mr-2 mb-2 bg-gray-200 hover:bg-gray-300 rounded-full py-2 px-4 text-m font-bold">Related Paper 2</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <div className="grid grid-cols-2 gap-4 rounded-lg p-4 mb-4">
+            {/*<div className="grid grid-cols-2 gap-4 rounded-lg p-4 mb-4">
                 <div>
                     <h2 className="text-xl font-bold mb-4">Summary</h2>
                     <div className="bg-pastel-purple-200 p-4 mb-4 rounded-lg">
@@ -51,13 +71,11 @@ const PaperContainer: React.FC = () => {
                         <p className="mr-2 mb-2 bg-yellow-100 hover:bg-yellow-200 rounded-full py-2 px-4 text-m font-bold">Nature</p>
                         <p className="mr-2 mb-2 bg-red-100 hover:bg-red-200 rounded-full py-2 px-4 text-m font-bold">Stanford University</p>
                         <p className="mr-2 mb-2 bg-green-100 hover:bg-green-200 rounded-full py-2 px-4 text-m font-bold">Peer Reviewed</p>
-                        {/* Add more related papers here */}
                     </div>
                     <h2 className="text-xl font-bold mb-4">Related Papers</h2>
                     <div className="flex flex-wrap mb-4">
                         <p className="mr-2 mb-2 bg-gray-200 hover:bg-gray-300 rounded-full py-2 px-4 text-m font-bold">Attention is All You Need</p>
                         <p className="mr-2 mb-2 bg-gray-200 hover:bg-gray-300 rounded-full py-2 px-4 text-m font-bold">Related Paper 2</p>
-                        {/* Add more related papers here */}
                     </div>
                     <Button variant='default'>Give Me Background Info</Button>
                 </div>
@@ -67,7 +85,7 @@ const PaperContainer: React.FC = () => {
                         <p className="text-black">An important paradigm of natural language processing consists of large-scale pre- training on general domain data and adaptation to particular tasks or domains. As we pre-train larger models, full fine-tuning, which retrains all model parameters, becomes less feasible. Using GPT-3 175B as an example – deploying indepen- dent instances of fine-tuned models, each with 175B parameters, is prohibitively expensive. We propose Low-Rank Adaptation, or LoRA, which freezes the pre- trained model weights and injects trainable rank decomposition matrices into each layer of the Transformer architecture, greatly reducing the number of trainable pa- rameters for downstream tasks. Compared to GPT-3 175B fine-tuned with Adam, LoRA can reduce the number of trainable parameters by 10,000 times and the GPU memory requirement by 3 times. LoRA performs on-par or better than fine- tuning in model quality on RoBERTa, DeBERTa, GPT-2, and GPT-3, despite hav- ing fewer trainable parameters, a higher training throughput, and, unlike adapters, no additional inference latency. We also provide an empirical investigation into rank-deficiency in language model adaptation, which sheds light on the efficacy of LoRA. We release a package that facilitates the integration of LoRA with PyTorch models and provide our implementations and model checkpoints for RoBERTa, DeBERTa, and GPT-2 at https://github.com/microsoft/LoRA.</p>
                     </div>
                 </div>
-            </div>
+            </div>*/}
         </div>
     );
 };

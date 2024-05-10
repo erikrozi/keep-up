@@ -5,6 +5,14 @@ import { auth, db, logout } from "../firebase";
 import { query, collection, getDocs, where } from "firebase/firestore";
 import { Button } from "../components/ui/button.tsx";
 import { PaperContainer } from "../components/ui/paper-container.tsx";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../components/ui/carousel.tsx"
+
 
 function Dashboard() {
   const [user, loading] = useAuthState(auth);
@@ -29,20 +37,33 @@ function Dashboard() {
     fetchUserName();
   }, [user, loading, navigate]);
   return (
-    <div className="bg-white min-h-screen">
-       <div className="dashboard__container">
+    <div className="bg-[#95CADE] min-h-screen">
+        <div className="flex flex-row justify-between items-center p-4">
         Logged in as
-         <div>{name}</div>
-         <div>{user?.email}</div>
-         <Button className="dashboard__btn" onClick={logout}>
+          <div>{name}</div>
+          <div>{user?.email}</div>
+          <Button className="dashboard__btn" onClick={logout}>
           Logout
-         </Button>
-       </div>
+          </Button>
+        </div>
 
-        <PaperContainer />
-        <PaperContainer />
-        <PaperContainer />
-        <PaperContainer />
+        <div className="flex flex-row justify-center items-center">
+          <Carousel 
+            orientation="horizontal"
+            className="w-3/4"
+            opts={{
+              align: "start",
+            }}
+          >
+            <CarouselContent className="h-200">
+              <CarouselItem><PaperContainer /></CarouselItem>
+              <CarouselItem><PaperContainer /></CarouselItem>
+              <CarouselItem><PaperContainer /></CarouselItem>
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        </div>
      </div>
   );
 }
