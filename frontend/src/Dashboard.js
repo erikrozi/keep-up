@@ -35,6 +35,9 @@ function Dashboard() {
          <button className="dashboard__btn" onClick={logout}>
           Logout
          </button>
+         <button className="onboard__btn" onClick={() => navigate("/onboardingfive")}>
+          Onboard
+         </button>
        </div>
      </div>
   );
