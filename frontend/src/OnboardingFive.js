@@ -8,6 +8,7 @@ function OnboardingFive() {
   const [user, loading] = useAuthState(auth);
   const [name, setName] = useState("");
   const navigate = useNavigate();
+
   useEffect(() => {
     if (loading) return;
     if (!user) return navigate("/");
@@ -46,6 +47,11 @@ function OnboardingFive() {
     }
   };
 
+  const handleTopicSelectionComplete = () => {
+    // Redirect to subtopic selection page with selected topics
+    navigate("/onboardingsubtopics", { state: { selectedTopics } })
+  };
+
   return (
     <div className="dashboard">
        <div className="dashboard__container">
@@ -79,6 +85,7 @@ function OnboardingFive() {
           ))}
         </ul>
       </div>
+      <button onClick={handleTopicSelectionComplete}>Continue to Subtopics</button>
     </div>
 
        </div>

@@ -5,6 +5,7 @@ import Register from "./authentication/Register";
 import Reset from "./authentication/Reset";
 import Dashboard from "./Dashboard";
 import OnboardingFive from "./OnboardingFive"
+import OnboardingSubtopics from "./OnboardingSubtopics"
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route exact path="/reset" element={<Reset />} />
           <Route exact path="/dashboard" element={<Dashboard />} />
           <Route exact path="/onboardingfive" element={<OnboardingFive />} />
+          <Route exact path="/onboardingsubtopics" element={<OnboardingSubtopics />} />
         </Routes>
       </Router>
     </div>
