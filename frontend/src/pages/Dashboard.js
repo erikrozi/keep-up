@@ -72,15 +72,16 @@ function Dashboard() {
             }}
             pagination={{
                 dynamicBullets: true,
+                clickable: true,
             }}
             modules={[Pagination, Keyboard, Mousewheel]}
             autoHeight={true}
         >
-            <SwiperSlide className="h-fit"><PaperContainer /></SwiperSlide>
-            <SwiperSlide className="h-fit"><PaperContainer /></SwiperSlide>
-            <SwiperSlide className="h-fit"><PaperContainer /></SwiperSlide>
-            <SwiperSlide className="h-fit"><PaperContainer /></SwiperSlide>
-            <SwiperSlide className="h-fit"><PaperContainer /></SwiperSlide>
+            <SwiperSlide className="h-fit"><PaperContainer loading="lazy"/><div class="swiper-lazy-preloader"></div></SwiperSlide>
+            <SwiperSlide className="h-fit"><PaperContainer loading="lazy"/><div class="swiper-lazy-preloader"></div></SwiperSlide>
+            <SwiperSlide className="h-fit"><PaperContainer loading="lazy"/><div class="swiper-lazy-preloader"></div></SwiperSlide>
+            <SwiperSlide className="h-fit"><PaperContainer loading="lazy"/><div class="swiper-lazy-preloader"></div></SwiperSlide>
+            <SwiperSlide className="h-fit"><PaperContainer loading="lazy"/><div class="swiper-lazy-preloader"></div></SwiperSlide>
         </Swiper>
         </div>
      </div>
