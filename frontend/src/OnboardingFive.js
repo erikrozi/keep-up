@@ -42,7 +42,7 @@ function OnboardingFive() {
       if (selectedTopics.length < 5) {
         setSelectedTopics([...selectedTopics, topic]);
       } else {
-        alert('You can only select up to 10 topics.');
+        alert('You can only select up to 5 topics.');
       }
     }
   };
