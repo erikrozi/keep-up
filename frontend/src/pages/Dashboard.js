@@ -1,10 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
 import { auth, db, logout } from "../firebase";
 import { query, collection, getDocs, where } from "firebase/firestore";
 import { Button } from "../components/ui/button.tsx";
 import { PaperContainer } from "../components/ui/paper-container.tsx";
+
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Keyboard, Mousewheel } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/keyboard';
+import 'swiper/css/mousewheel';
 
 function Dashboard() {
   const [user, loading] = useAuthState(auth);
@@ -29,20 +36,54 @@ function Dashboard() {
     fetchUserName();
   }, [user, loading, navigate]);
   return (
-    <div className="bg-white min-h-screen">
-       <div className="dashboard__container">
+    <div className="bg-cornflower-200 min-h-screen">
+        <div className="flex flex-row justify-between items-center p-4">
         Logged in as
-         <div>{name}</div>
-         <div>{user?.email}</div>
-         <Button className="dashboard__btn" onClick={logout}>
+          <div>{name}</div>
+          <div>{user?.email}</div>
+          <Button className="dashboard__btn" onClick={logout}>
           Logout
-         </Button>
-       </div>
+          </Button>
+        </div>
 
-        <PaperContainer />
-        <PaperContainer />
-        <PaperContainer />
-        <PaperContainer />
+        <div className="flex flex-row justify-center items-center my-8">
+          <h1 className="text-6xl">One paper at a time.</h1>
+        </div>
+
+        <div className="flex flex-row justify-center items-center mx-10">
+
+        <Swiper
+            direction={'vertical'}
+            slidesPerView={'auto'}
+            spaceBetween={50}
+            centeredSlides={true}
+            mousewheel={
+              {
+                enabled: true,
+                forceToAxis: true,
+                thresholdDelta: 5,
+                thresholdTime: 1000,
+                invert: true
+              }
+            }
+            keyboard={{
+                enabled: true,
+                onlyInViewport: false,
+            }}
+            pagination={{
+                dynamicBullets: true,
+                clickable: true,
+            }}
+            modules={[Pagination, Keyboard, Mousewheel]}
+            autoHeight={true}
+        >
+            <SwiperSlide className="h-fit"><PaperContainer loading="lazy"/><div class="swiper-lazy-preloader"></div></SwiperSlide>
+            <SwiperSlide className="h-fit"><PaperContainer loading="lazy"/><div class="swiper-lazy-preloader"></div></SwiperSlide>
+            <SwiperSlide className="h-fit"><PaperContainer loading="lazy"/><div class="swiper-lazy-preloader"></div></SwiperSlide>
+            <SwiperSlide className="h-fit"><PaperContainer loading="lazy"/><div class="swiper-lazy-preloader"></div></SwiperSlide>
+            <SwiperSlide className="h-fit"><PaperContainer loading="lazy"/><div class="swiper-lazy-preloader"></div></SwiperSlide>
+        </Swiper>
+        </div>
      </div>
   );
 }
