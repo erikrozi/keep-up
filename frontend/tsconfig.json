@@ -2,7 +2,7 @@
   "compilerOptions": {
     "module": "esnext", // or "commonjs" if you're targeting Node.js without ESM
     "target": "es5",    // or whatever ECMAScript version you need
-    "jsx": "react",     // important for .tsx files
+    "jsx": "react-jsx",     // important for .tsx files
     "moduleResolution": "node",  // helps with node_modules resolution
     "esModuleInterop": true,
     "noEmit": true,
