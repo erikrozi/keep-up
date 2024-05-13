@@ -3,6 +3,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate, useLocation } from "react-router-dom";
 import { auth, db, logout } from "./firebase";
 import { query, collection, getDocs, where } from "firebase/firestore";
+import { Button } from "./components/ui/button.tsx"
 
 function OnboardingSubtopics() {
   const [user, loading] = useAuthState(auth);
@@ -75,6 +76,8 @@ function OnboardingSubtopics() {
   };
 
   return (
+    <div className="bg-gradient-to-r from-skyblue-500 via-white-500 to-royal-blue-500 flex justify-center items-center min-h-screen">
+      <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6">
     <div>
       <h2>Select Subtopics</h2>
       <div>
@@ -94,16 +97,16 @@ function OnboardingSubtopics() {
             <ul>
               {subtopicMap[topic].map((subtopic, subIndex) => (
                 <li key={subIndex}>
-                  <button
+                  <Button
                     onClick={() => handleSubtopicToggle(subtopic)}
                     style={{
                       backgroundColor: selectedSubtopics.includes(subtopic)
                         ? 'lightblue'
-                        : 'inherit'
+                        : 'black'
                     }}  
                   >
                     {subtopic}
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>
@@ -127,7 +130,9 @@ function OnboardingSubtopics() {
       />
       <button onClick={handleCustomSubtopicAdd}>Add</button>
     </div>
-      <button onClick={handleTopicSelectionComplete}>Continue to Subtopics</button>
+      <button onClick={handleTopicSelectionComplete}>Continue to Dashboard</button>
+    </div>
+    </div>
     </div>
     </div>
   );

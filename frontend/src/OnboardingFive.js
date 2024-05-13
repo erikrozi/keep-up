@@ -7,6 +7,7 @@ import { query, collection, getDocs, where } from "firebase/firestore";
 import { Checkbox } from "./components/ui/checkbox.tsx"
 import { useForm } from "react-hook-form"
 import ProgressBar from './components/ui/progressbar.js';
+import { Button } from "./components/ui/button.tsx"
 
 
 function OnboardingFive() {
@@ -62,12 +63,7 @@ function OnboardingFive() {
       <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6">
         <div className="dashboard">
            <div className="dashboard__container">
-            Logged in as
-             <div>{name}</div>
-             <div>{user?.email}</div>
-             <button className="dashboard__btn" onClick={logout}>
-              Logout
-             </button>
+      
              <p> Indicate up to 5 topic areas of interest. </p>
 
 
@@ -75,13 +71,13 @@ function OnboardingFive() {
           <h2>Select Topics</h2>
           <div>
             {topics.map((topic, index) => (
-              <button 
+              <Button 
                 key={index} 
                 onClick={() => handleTopicToggle(topic)} 
                 className={selectedTopics.includes(topic) ? 'selected' : ''}
               >
                 {topic}
-              </button>
+              </Button>
             ))}
           </div>
           <div>
