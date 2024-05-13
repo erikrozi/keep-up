@@ -43,8 +43,8 @@ export function RegisterForm() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Register</CardTitle>
-        <CardDescription>
+        <CardTitle className="mb-4 text-4xl font-bold leading-none tracking-tight text-gray-900">Register</CardTitle>
+        <CardDescription className="mb-4 text-2xl font-normal text-gray-500">
           Enter your information below to create an account
         </CardDescription>
       </CardHeader>
