@@ -28,7 +28,7 @@ export function RegisterForm() {
 
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      navigate("/personalInfo");
     }
   }, [user, navigate]);
 
