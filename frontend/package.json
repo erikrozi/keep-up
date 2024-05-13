@@ -3,11 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-<<<<<<< HEAD
-    "@hookform/resolvers": "^3.3.4",
-=======
     "@radix-ui/react-accordion": "^1.1.2",
->>>>>>> 466d868e635f3bae1456c3fa311b18d71d8b4719
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-slot": "^1.0.2",
@@ -25,11 +21,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-firebase-hooks": "^5.1.1",
-<<<<<<< HEAD
     "react-hook-form": "^7.51.4",
-=======
     "react-markdown": "^9.0.1",
->>>>>>> 466d868e635f3bae1456c3fa311b18d71d8b4719
     "react-router-dom": "^6.23.0",
     "react-scripts": "5.0.1",
     "react-spring": "^9.7.3",
