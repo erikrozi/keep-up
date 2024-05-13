@@ -44,7 +44,7 @@ function PersonalInfo() {
     // }, [user, navigate]);
     const form = useForm();
     const onSubmit = data => {
-        navigate('/dashboard', { state: { data } });
+        navigate('/onboardingfive', { state: { data } });
     };
 
     return (
