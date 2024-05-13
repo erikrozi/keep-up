@@ -71,7 +71,7 @@ function OnboardingSubtopics() {
 
   const handleTopicSelectionComplete = () => {
     // Redirect to subtopic selection page with selected topics
-    navigate("/onboardingsubtopics", { state: { selectedTopics } })
+    navigate("/dashboard", { state: { selectedSubtopics } })
   };
 
   return (
@@ -100,7 +100,7 @@ function OnboardingSubtopics() {
                       backgroundColor: selectedSubtopics.includes(subtopic)
                         ? 'lightblue'
                         : 'inherit'
-                    }}
+                    }}  
                   >
                     {subtopic}
                   </button>

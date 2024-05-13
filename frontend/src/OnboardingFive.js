@@ -4,6 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { auth, db, logout } from "./firebase";
 import { query, collection, getDocs, where } from "firebase/firestore";
 
+import { Checkbox } from "./components/ui/checkbox.tsx"
+import { useForm } from "react-hook-form"
+import ProgressBar from './components/ui/progressbar.js';
+
+
 function OnboardingFive() {
   const [user, loading] = useAuthState(auth);
   const [name, setName] = useState("");
