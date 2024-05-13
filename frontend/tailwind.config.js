@@ -18,6 +18,9 @@ module.exports = {
     },
     extend: {
       colors: {
+        'skyblue': {
+            '500': '#95cade',
+        },
         'royal-blue': {
             '50': '#ecf4ff',
             '100': '#ddeaff',
