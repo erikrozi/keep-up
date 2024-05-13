@@ -7,11 +7,12 @@ import { Button } from "../components/ui/button.tsx";
 import { PaperContainer } from "../components/ui/paper-container.tsx";
 
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Keyboard, Mousewheel } from 'swiper/modules';
+import { Pagination, Keyboard, Mousewheel, Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/keyboard';
 import 'swiper/css/mousewheel';
+import 'swiper/css/navigation';
 
 function Dashboard() {
   const [user, loading] = useAuthState(auth);
@@ -36,7 +37,7 @@ function Dashboard() {
     fetchUserName();
   }, [user, loading, navigate]);
   return (
-    <div className="bg-cornflower-200 min-h-screen">
+    <div className="bg-gradient-to-r from-skyblue-500 via-white-500 to-royal-blue-500 min-h-screen">
         <div className="flex flex-row justify-between items-center p-4">
         Logged in as
           <div>{name}</div>
