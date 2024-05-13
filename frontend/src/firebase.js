@@ -25,7 +25,7 @@ const firebaseConfig = {
   storageBucket: "keepup-f143d.appspot.com",
   messagingSenderId: "434713588482",
   appId: "1:434713588482:web:473723d91026aae401481b",
-  measurementId: "G-V6CSVRPPBP"
+  measurementId: "G-V6CSVRPPBP",
 };
 
 // Initialize Firebase

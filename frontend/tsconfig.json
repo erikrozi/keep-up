@@ -1,23 +1,18 @@
 {
   "compilerOptions": {
     "module": "esnext", // or "commonjs" if you're targeting Node.js without ESM
-    "target": "es5",    // or whatever ECMAScript version you need
-    "jsx": "react",     // important for .tsx files
-    "moduleResolution": "node",  // helps with node_modules resolution
+    "target": "es5", // or whatever ECMAScript version you need
+    "jsx": "react", // important for .tsx files
+    "moduleResolution": "node", // helps with node_modules resolution
     "esModuleInterop": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
-    "outDir": "./dist",  // specifies the output directory for compiled files
-    "rootDir": "./src"  // specifies the root directory of input files
+    "outDir": "./dist", // specifies the output directory for compiled files
+    "rootDir": "./src" // specifies the root directory of input files
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/*.ts",
-    "src/*.tsx",
-  ],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/*.ts", "src/*.tsx"],
   "exclude": [
-    "node_modules",  // commonly excluded from the compilation
+    "node_modules", // commonly excluded from the compilation
     "**/*.test.ts"
-  ],
+  ]
 }

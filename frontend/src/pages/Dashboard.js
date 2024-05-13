@@ -5,6 +5,16 @@ import { auth, db, logout } from "../firebase";
 import { query, collection, getDocs, where } from "firebase/firestore";
 import { Button } from "../components/ui/button.tsx";
 import { PaperContainer } from "../components/ui/paper-container.tsx";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+} from "../components/ui/navigation-menu.tsx";
 
 function Dashboard() {
   const [user, loading] = useAuthState(auth);
@@ -30,20 +40,30 @@ function Dashboard() {
   }, [user, loading, navigate]);
   return (
     <div className="bg-white min-h-screen">
-       <div className="dashboard__container">
+      <NavigationMenu>
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Item One</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <NavigationMenuLink>Link</NavigationMenuLink>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
+      <div className="dashboard__container">
         Logged in as
-         <div>{name}</div>
-         <div>{user?.email}</div>
-         <Button className="dashboard__btn" onClick={logout}>
+        <div>{name}</div>
+        <div>{user?.email}</div>
+        <Button className="dashboard__btn" onClick={logout}>
           Logout
-         </Button>
-       </div>
+        </Button>
+      </div>
 
-        <PaperContainer />
-        <PaperContainer />
-        <PaperContainer />
-        <PaperContainer />
-     </div>
+      <PaperContainer />
+      <PaperContainer />
+      <PaperContainer />
+      <PaperContainer />
+    </div>
   );
 }
 export default Dashboard;
