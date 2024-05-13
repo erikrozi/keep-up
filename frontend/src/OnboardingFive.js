@@ -58,43 +58,47 @@ function OnboardingFive() {
   };
 
   return (
-    <div className="dashboard">
-       <div className="dashboard__container">
-        Logged in as
-         <div>{name}</div>
-         <div>{user?.email}</div>
-         <button className="dashboard__btn" onClick={logout}>
-          Logout
-         </button>
-         <p> Indicate up to 5 topic areas of interest. </p>
+    <div className="bg-gradient-to-r from-skyblue-500 via-white-500 to-royal-blue-500 flex justify-center items-center min-h-screen">
+      <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6">
+        <div className="dashboard">
+           <div className="dashboard__container">
+            Logged in as
+             <div>{name}</div>
+             <div>{user?.email}</div>
+             <button className="dashboard__btn" onClick={logout}>
+              Logout
+             </button>
+             <p> Indicate up to 5 topic areas of interest. </p>
 
 
-         <div>
-      <h2>Select Topics</h2>
-      <div>
-        {topics.map((topic, index) => (
-          <button 
-            key={index} 
-            onClick={() => handleTopicToggle(topic)} 
-            className={selectedTopics.includes(topic) ? 'selected' : ''}
-          >
-            {topic}
-          </button>
-        ))}
+             <div>
+          <h2>Select Topics</h2>
+          <div>
+            {topics.map((topic, index) => (
+              <button 
+                key={index} 
+                onClick={() => handleTopicToggle(topic)} 
+                className={selectedTopics.includes(topic) ? 'selected' : ''}
+              >
+                {topic}
+              </button>
+            ))}
+          </div>
+          <div>
+            <h3>Selected Topics:</h3>
+            <ul>
+              {selectedTopics.map((topic, index) => (
+                <li key={index}>{topic}</li>
+              ))}
+            </ul>
+          </div>
+          <button onClick={handleTopicSelectionComplete}>Continue to Subtopics</button>
+        </div>
+
+           </div>
+         </div>
       </div>
-      <div>
-        <h3>Selected Topics:</h3>
-        <ul>
-          {selectedTopics.map((topic, index) => (
-            <li key={index}>{topic}</li>
-          ))}
-        </ul>
-      </div>
-      <button onClick={handleTopicSelectionComplete}>Continue to Subtopics</button>
     </div>
-
-       </div>
-     </div>
   );
 }
 export default OnboardingFive;
