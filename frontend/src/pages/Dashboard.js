@@ -29,7 +29,10 @@ function Dashboard() {
   const navigate = useNavigate();
   useEffect(() => {
     if (loading) return;
-    if (!user) return navigate("/");
+    if (!user) {
+      navigate("/");
+      return;
+    }
 
     const fetchUserName = async () => {
       try {
@@ -45,25 +48,30 @@ function Dashboard() {
 
     fetchUserName();
   }, [user, loading, navigate]);
+
+  if (loading) return <div>Loading...</div>; // Show loading until user and name are ready
+  if (!user) return <div>Please log in.</div>; // Safety check to ensure user is not null
+
   return (
-    <div className="bg-cornflower-200 min-h-screen">
-      <NavigationMenu>
+    <div className="bg-gradient-to-r from-skyblue-500 via-white-500 to-royal-blue-500 min-h-screen">
+      <NavigationMenu user={{ name, email: user.email }} logout={logout}>
         <NavigationMenuList>
-          <NavigationMenuItem>
-            <NavigationMenuTrigger>Item One</NavigationMenuTrigger>
-            <NavigationMenuContent>
+          {/* <NavigationMenuItem> */}
+          {/* <NavigationMenuTrigger>Item One</NavigationMenuTrigger> */}
+          {/* <NavigationMenuContent>
               <NavigationMenuLink>Link</NavigationMenuLink>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
+            </NavigationMenuContent> */}
+          {/* <NavigationMenuTrigger>Digest</NavigationMenuTrigger> */}
+          {/* </NavigationMenuItem> */}
         </NavigationMenuList>
       </NavigationMenu>
       <div className="flex flex-row justify-between items-center p-4">
-        Logged in as
+        {/* Logged in as
         <div>{name}</div>
-        <div>{user?.email}</div>
-        <Button className="dashboard__btn" onClick={logout}>
+        <div>{user?.email}</div> */}
+        {/* <Button className="dashboard__btn" onClick={logout}>
           Logout
-        </Button>
+        </Button> */}
       </div>
 
       <div className="flex flex-row justify-center items-center my-8">
