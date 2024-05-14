@@ -1,35 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate, useLocation } from "react-router-dom";
-import { auth, db, logout } from "./firebase";
-import { query, collection, getDocs, where } from "firebase/firestore";
-import { Button } from "./components/ui/button.tsx"
+import { Button } from "../components/ui/button.tsx"
+import { supabase } from "../utils/supabase.ts";
+import useSupabaseUser from '../hooks/useSupabaseUser'
 
 function OnboardingSubtopics() {
-  const [user, loading] = useAuthState(auth);
-  const [name, setName] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
 
-  const selectedTopics = location.state.selectedTopics; 
-
-  useEffect(() => {
-    if (loading) return;
-    if (!user) return navigate("/");
-
-    const fetchUserName = async () => {
-      try {
-        const q = query(collection(db, "users"), where("uid", "==", user?.uid));
-        const doc = await getDocs(q);
-        const data = doc.docs[0].data();
-        setName(data.name);
-      } catch (err) {
-        console.error(err);
-        alert("An error occured while fetching user data");
-      }
-    };
-    fetchUserName();
-  }, [user, loading, navigate]);
+  const selectedTopics = location.state.selectedTopics;
+  const { user, loading, error } = useSupabaseUser();
 
 
   const [selectedSubtopics, setSelectedSubtopics] = useState([]);
@@ -72,7 +52,7 @@ function OnboardingSubtopics() {
 
   const handleTopicSelectionComplete = () => {
     // Redirect to subtopic selection page with selected topics
-    navigate("/dashboard", { state: { selectedSubtopics } })
+    navigate("/dashboard/", { state: { selectedSubtopics } })
   };
 
   return (

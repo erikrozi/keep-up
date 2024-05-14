@@ -12,9 +12,6 @@ import {
     FormItem,
     FormLabel,
 } from "../components/ui/form.tsx"
-import { query, collection, getDocs, where } from "firebase/firestore";
-import { auth, db, logout } from "../firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
 
 function PersonalInfo() {
     const [progress, setProgress] = useState(0);
@@ -23,25 +20,6 @@ function PersonalInfo() {
     };
 
     const navigate = useNavigate();
-    // const [user, loading] = useAuthState(auth);
-    // const [name, setName] = useState("");
-    // useEffect(() => {
-    //     if (!user) return navigate("/");
-
-    //     const fetchUserName = async () => {
-    //         try {
-    //             const q = query(collection(db, "users"), where("uid", "==", user?.uid));
-    //             const doc = await getDocs(q);
-    //             const data = doc.docs[0].data();
-    //             setName(data.name);
-    //         } catch (err) {
-    //             console.error(err);
-    //             alert("An error occured while fetching user data");
-    //         }
-    //     };
-
-    //     fetchUserName();
-    // }, [user, navigate]);
     const form = useForm();
     const onSubmit = data => {
         navigate('/onboardingfive', { state: { data } });

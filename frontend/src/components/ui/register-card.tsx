@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  auth,
-  registerWithEmailAndPassword,
-  signInWithGoogle,
-} from "../../firebase.js";
 
 import { Button } from "./button.tsx"
 import {
@@ -18,25 +12,57 @@ import {
 import { Input } from "./input.tsx"
 import { Label } from "./label.tsx"
 
-export function RegisterForm() {
+import { supabase } from "../../utils/supabase.ts";
 
+
+export function RegisterForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
   const [name, setName] = useState("");
-  const [user, loading] = useAuthState(auth);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (user) {
+  
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_IN") {
       navigate("/personalInfo");
-    }
-  }, [user, navigate]);
-
-  const register = () => {
-    if (!name) {
-        alert("Please enter name");
+    } else if (event === "SIGNED_OUT") {
+      navigate("/");
     } else {
-        registerWithEmailAndPassword(name, email, password);
+      console.log("Unknown event:", event);
+    }
+  })
+
+  async function signUpNewUser() {
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          full_name: name,
+        },
+      },
+    });
+
+    if (error) {
+      setError(error.message);
+      alert(error.message);
+    } else {
+      setError(null);
+    }
+  }
+
+  const getURL = () => {
+    return window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + '/personalInfo';
+  }
+
+  const handleGoogleLogin = async () => {
+    const url = getURL();
+    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo:  getURL() } });
+    if (error) {
+      setError(error.message);
+      alert(error.message)
+    } else {
+      setError(null);
     }
   };
 
@@ -73,9 +99,6 @@ export function RegisterForm() {
           <div className="grid gap-2">
             <div className="flex items-center">
               <Label htmlFor="password">Password</Label>
-              {/* <Link href="#" className="ml-auto inline-block text-sm underline"> */}
-                {/* Forgot your password? */}
-              {/* </Link> */}
             </div>
             <Input
               id="password"
@@ -87,23 +110,20 @@ export function RegisterForm() {
           <Button
             type="submit"
             className="w-full"
-            onClick={register}
+            onClick={signUpNewUser}
           >
             Register
           </Button>
           <Button
             variant="outline"
             className="w-full"
-            onClick={signInWithGoogle}
+            onClick={handleGoogleLogin}
           >
             Register with Google
           </Button>
         </div>
         <div className="mt-4 text-center text-sm">
           Already have an account?{" "}
-          {/* <Link href="#" className="underline">
-            Sign up
-          </Link> */}
           <Link to="/login" className="underline">Sign in</Link>
         </div>
       </CardContent>
