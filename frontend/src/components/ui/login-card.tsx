@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { 
-  auth,
-  logInWithEmailAndPassword,
-  signInWithGoogle
-} from "../../firebase.js";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { Button } from "./button.tsx"
 import {
   Card,
@@ -16,19 +10,53 @@ import {
 } from "./card.tsx"
 import { Input } from "./input.tsx"
 import { Label } from "./label.tsx"
+import { supabase } from "../../utils/supabase.ts";
 
 export function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [user, loading] = useAuthState(auth);
+  const [error, setError] = useState(null);
+
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (user) {
-      navigate("/dashboard");
+  /*
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === "SIGNED_IN") {
+      navigate("/dashboard/");
+    } else if (event === "SIGNED_OUT") {
+      navigate("/");
+    } else {
+      console.log("Unknown event:", event);
     }
-  }, [user, navigate]);
+  })*/
+
+  const handleEmailLogin = async (e) => {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      setError(error.message);
+      // Display error message
+      console.log(error.message);
+      // Alert the user
+      alert(error.message);
+    } else {
+      setError(null);
+    }
+  };
+
+  const getURL = () => {
+    return window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + '/dashboard/';
+  }
+
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo:  getURL() } });
+    if (error) {
+      setError(error.message);
+      alert(error.message)
+    } else {
+      setError(null);
+    }
+  };
 
   return (
     <Card className="mx-auto max-w-sm">
@@ -64,14 +92,14 @@ export function LoginForm() {
           <Button
             type="submit"
             className="w-full"
-            onClick={() => logInWithEmailAndPassword(email, password)}
+            onClick={(e) => handleEmailLogin(e)}
           >
             Login
           </Button>
           <Button
             variant="outline"
             className="w-full"
-            onClick={signInWithGoogle}
+            onClick={handleGoogleLogin}
           >
             Login with Google
           </Button>

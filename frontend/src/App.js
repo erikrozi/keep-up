@@ -1,15 +1,16 @@
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Reset from "./authentication/Reset";
 
-import OnboardingFive from "./OnboardingFive"
-import OnboardingSubtopics from "./OnboardingSubtopics"
+import OnboardingFive from "./pages/OnboardingFive"
+import OnboardingSubtopics from "./pages/OnboardingSubtopics"
 
 import Dashboard from "./pages/Dashboard";
 import PersonalInfo from "./pages/PersonalInfo";
 import LandingPage from "./pages/Landing";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import RedirectIfAuthenticated from "./components/RedirectIfAuthenticated";
 
 function App() {
   return (
@@ -17,13 +18,12 @@ function App() {
       <Router>
         <Routes>
           <Route exact path="/" element={<LandingPage />} />
-          <Route exact path="/login" element={<LoginPage />} />
-          <Route exact path="/register" element={<RegisterPage />} />
-          <Route exact path="/reset" element={<Reset />} />
-          <Route exact path="/dashboard" element={<Dashboard />} />
-          <Route exact path="/onboardingfive" element={<OnboardingFive />} />
-          <Route exact path="/onboardingsubtopics" element={<OnboardingSubtopics />} />
-          <Route exact path="/personalInfo" element={<PersonalInfo />} />
+          <Route exact path="/login/" element={<RedirectIfAuthenticated><LoginPage /></RedirectIfAuthenticated>} />
+          <Route exact path="/register/" element={<RedirectIfAuthenticated><RegisterPage /></RedirectIfAuthenticated>} />
+          <Route exact path="/dashboard/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route exact path="/onboardingfive/" element={<ProtectedRoute><OnboardingFive /></ProtectedRoute>} />
+          <Route exact path="/onboardingsubtopics/" element={<ProtectedRoute><OnboardingSubtopics /></ProtectedRoute>} />
+          <Route exact path="/personalInfo/" element={<ProtectedRoute><PersonalInfo /></ProtectedRoute>} />
         </Routes>
       </Router>
     </div>
