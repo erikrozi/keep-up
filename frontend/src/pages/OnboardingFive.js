@@ -46,6 +46,7 @@ function OnboardingFive() {
         const isSelected = selectedTopics.includes(topic);
         if (isSelected) {
             setSelectedTopics(selectedTopics.filter((item) => item !== topic));
+            setSelectedSubtopics(selectedSubtopics.filter((subtopic) => !subtopicMap[topic].includes(subtopic)));
             setErrorMessage(''); // Clear error message when unchecking
         } else {
             if (selectedTopics.length < 5) {
