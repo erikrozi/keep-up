@@ -2,7 +2,6 @@ import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import OnboardingFive from "./pages/OnboardingFive"
-import OnboardingSubtopics from "./pages/OnboardingSubtopics"
 
 import Dashboard from "./pages/Dashboard";
 import PersonalInfo from "./pages/PersonalInfo";
@@ -22,7 +21,6 @@ function App() {
           <Route exact path="/register/" element={<RedirectIfAuthenticated><RegisterPage /></RedirectIfAuthenticated>} />
           <Route exact path="/dashboard/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route exact path="/onboardingfive/" element={<ProtectedRoute><OnboardingFive /></ProtectedRoute>} />
-          <Route exact path="/onboardingsubtopics/" element={<ProtectedRoute><OnboardingSubtopics /></ProtectedRoute>} />
           <Route exact path="/personalInfo/" element={<ProtectedRoute><PersonalInfo /></ProtectedRoute>} />
         </Routes>
       </Router>
