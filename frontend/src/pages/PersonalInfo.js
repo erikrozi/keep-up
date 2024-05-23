@@ -62,7 +62,7 @@ function PersonalInfo() {
 
     return (
         <div className="bg-gradient-to-r from-skyblue-500 via-white-500 to-royal-blue-500 flex justify-center items-center min-h-screen">
-            <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6">
+            <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6" style={{ width: '600px', minHeight: '500px' }}>
                 <Progress className="mb-4" value={progress} />
                 <h1 class="mb-4 text-4xl font-bold leading-none tracking-tight text-gray-900">Welcome.</h1>
                 <h2 class="mb-4 text-2xl font-normal text-gray-500">We'd like to get to know you a bit more.</h2>
