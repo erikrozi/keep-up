@@ -1,9 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Header
 from fastapi.encoders import jsonable_encoder
 
 from pydantic import BaseModel
+from uuid import UUID
+from datetime import datetime
+
 from supabase import create_client, Client
 from pinecone import Pinecone
+
+from ..utils.recommend import generate_recommendations
 
 import os
 import json
@@ -22,22 +27,59 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 pinecone = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 pinecone_index = pinecone.Index("specter-embeddings")
 
-
 @router.get("/")
 async def read_users():
     return "Get your users here!"
 
-@router.get("/{user_id}")
-async def read_user(user_id: str):
-    # Fetch from users table
-    user_response = supabase.table('users').select('*').eq('user_id', user_id).execute()
-    user = user_response.data
+class View(BaseModel):
+    user_id: str
+    corpus_id: int
 
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+@router.post("/view")
+async def post_view(view: View):
+    # Add view to Supabase
+    try:
+        view_data = {
+            "user_id": view.user_id,
+            "corpus_id": view.corpus_id,
+            "timestamp": datetime.now().isoformat()
+        }
+        response = supabase.table("viewed_papers").insert(view_data).execute()
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=400, detail="Failed to add view to database")
     
-    result = {
-        "user": user[0]
-    }
+class Like(BaseModel):
+    user_id: str
+    corpus_id: int
 
-    return result
+# Handle POST request to like a paper
+@router.post("/like")
+async def post_like(like: Like):
+    data = {
+        "user_id": like.user_id,
+        "corpus_id": like.corpus_id,
+        "liked_at": datetime.now().isoformat()
+    }
+    response = supabase.table('liked_papers').insert(data).execute()
+
+# Handle DELETE request to unlike a paper
+@router.delete("/unlike")
+async def delete_like(user_id: str, paper_id: int):
+    response = supabase.table('liked_papers').delete().eq('user_id', user_id).eq('corpus_id', paper_id).execute()
+
+
+# Handle user paper recommendations
+@router.get("/recommend")
+async def get_recommendations(user_id: str):
+    exclude_ids = [] # Get all papers this user has viewed
+    papers_user_viewed = supabase.table("viewed_papers").select('*').eq("user_id", user_id).execute()
+    papers_user_viewed = papers_user_viewed.data
+
+    if papers_user_viewed:
+        exclude_ids = [paper["corpus_id"] for paper in papers_user_viewed]
+
+    return exclude_ids
+
+    recs = generate_recommendations(user_id=user_id, exclude_ids=exclude_ids)
+    return recs

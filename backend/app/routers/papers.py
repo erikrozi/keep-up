@@ -28,16 +28,16 @@ async def read_papers():
     return "Get your papers here!"
 
 
-@router.get("/{corpusid}")
-async def read_papers(corpusid: str):
+@router.get("/{corpus_id}")
+async def read_papers(corpus_id: str):
     # Fetch from paper_metadata table
-    metadata_response = supabase.table('paper_metadata').select('*').eq('corpusid', corpusid).execute()
+    metadata_response = supabase.table('paper_metadata').select('*').eq('corpus_id', corpus_id).execute()
     metadata = metadata_response.data
 
     if not metadata:
         raise HTTPException(status_code=404, detail="Paper metadata not found")
     
-    abstract = get_abstract(corpusid)
+    abstract = get_abstract(corpus_id)
     abstract_summary = get_abstract_summary(abstract)
 
     result = {
@@ -49,43 +49,43 @@ async def read_papers(corpusid: str):
     return result
 
 # get item embedding from pinecone
-@router.get("/{corpusid}/embedding")
-def get_paper_embeddings(corpusid: str):
-    embedding = pinecone_index.fetch(ids=[corpusid])
+@router.get("/{corpus_id}/embedding")
+def get_paper_embeddings(corpus_id: str):
+    embedding = pinecone_index.fetch(ids=[corpus_id])
     if not embedding:
         raise HTTPException(status_code=404, detail="Paper embedding not found")
     result = {
-        "corpusid": corpusid,
-        "embedding": embedding['vectors'][corpusid]['values']
+        "corpus_id": corpus_id,
+        "embedding": embedding['vectors'][corpus_id]['values']
     }
     print(result)
     return result
 
 # get related papers from pinecone
-@router.get("/{corpusid}/related")
-def get_related_papers(corpusid: str):
-    related = pinecone_index.query(id=corpusid, top_k=5)
+# top_k is the number of related papers to return
+# NOTE: pinecone query may include the paper itself in the results
+@router.get("/{corpus_id}/related")
+def get_related_papers(corpus_id: str):
+    related = pinecone_index.query(id=corpus_id, top_k=5)
     if not related:
         raise HTTPException(status_code=404, detail="Related papers not found")
     
-    parsed_related = {}
-    for i, item in enumerate(related['matches']):
-        parsed_item = {}
-        parsed_item['corpusid'] = item['id']
-        parsed_item['score'] = item['score']
-        parsed_item['values'] = item['values']
-        parsed_related[i] = parsed_item
+    result = []
+    for item in related['matches']:
+        if item['id'] == corpus_id:
+            continue
 
-    result = {
-        "corpusid": corpusid,
-        "related": parsed_related
-    }
+        parsed_item = {}
+        parsed_item['corpus_id'] = item['id']
+        parsed_item['score'] = item['score']
+        result.append(parsed_item)
+
     return result
 
 # helper function to get abstracts
-def get_abstract(corpusid: str):
+def get_abstract(corpus_id: str):
     # Fetch from paper_abstract table
-    abstract_response = supabase.table('paper_abstract').select('corpusid', 'abstract').eq('corpusid', corpusid).execute()
+    abstract_response = supabase.table('paper_abstract').select('corpus_id', 'abstract').eq('corpus_id', corpus_id).execute()
     abstract = abstract_response.data
 
     if not abstract:
