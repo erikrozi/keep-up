@@ -9,9 +9,27 @@ import { supabase } from '../../utils/supabase.ts';
 const PaperContainer: React.FC<{ paper: any, abstract: any, user: any}> = ({ paper, abstract, user}) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [authors, setAuthors] = useState([]);
 
   const userId = user.id; // Get the user ID from Supabase authentication  
-  const authorNames = JSON.parse(paper.authors).map((author: any) => author.name).join(", ");
+  console.log(typeof(paper.authors));
+
+  // Parse authors on initial load
+  useEffect(() => {
+    if (!Array.isArray(paper.authors)) {
+      try {
+        const parsedAuthors = JSON.parse(paper.authors);
+        setAuthors(parsedAuthors);
+      } catch (error) {
+        console.error('Error parsing authors:', error);
+        setAuthors([]);
+      }
+    } else {
+      setAuthors(paper.authors);
+    }
+  }, [paper.authors]);
+
+  const authorNames = authors.map((author: any) => author.name).join(", ");
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const month = String(date.getMonth() + 1).padStart(2, '0');
