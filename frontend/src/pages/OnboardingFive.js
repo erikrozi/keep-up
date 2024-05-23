@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Checkbox } from "../components/ui/checkbox.tsx";
 import { useForm } from "react-hook-form";
-import ProgressBar from '../components/ui/progressbar.js';
+import { Progress } from '../components/ui/progress.tsx';
 import { Button } from "../components/ui/button.tsx";
 import useSupabaseUser from '../hooks/useSupabaseUser';
 import { supabase } from '../../src/utils/supabase.ts';
@@ -25,6 +25,7 @@ function OnboardingFive() {
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [selectedSubtopics, setSelectedSubtopics] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const progress = 50; // Halfway through onboarding
 
 
   useEffect(() => {
@@ -42,6 +43,10 @@ function OnboardingFive() {
     const { data } = await supabase.from("subtopics").select("subtopic_id, topic_id, subtopic_name");
     setSubtopics(data);
   }
+
+  const handleBack = () => {
+    navigate('/personalInfo'); // Adjust the path to your previous step
+  };
 
   const handleCheckboxChange = (topic) => {
     const isSelected = selectedTopics.includes(topic);
@@ -113,7 +118,8 @@ function OnboardingFive() {
 
   return (
     <div className="bg-gradient-to-r from-skyblue-500 via-white-500 to-royal-blue-500 flex justify-center items-center min-h-screen">
-      <div className="bg-card border border-gray-400 shadow-lg rounded-lg p-6">
+      <div className="bg-card border border-gray-400 shadow-lg rounded-lg p-6" style={{ width: '600px', minHeight: '500px' }}>
+        <Progress className="mb-4" value={progress} />
         <h1 className="mb-4 text-4xl font-bold leading-none tracking-tight text-gray-900">Welcome.</h1>
         <h2 className="mb-4 text-2xl font-normal text-gray-500">What makes you excited?</h2>
         <Form {...form}>
@@ -160,7 +166,8 @@ function OnboardingFive() {
               </div>
             ))}
             {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-            <div className="flex items-center">
+            <div className="flex items-center justify-between">
+              <Button type="button" onClick={handleBack}>Back</Button>
               <Button type="submit">Next</Button>
             </div>
           </form>
