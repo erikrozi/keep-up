@@ -31,8 +31,16 @@ async def read_papers():
 @router.get("/{corpus_id}")
 async def read_papers(corpus_id: str):
     # Fetch from paper_metadata table
-    metadata_response = supabase.table('paper_metadata').select('*').eq('corpus_id', corpus_id).execute()
-    metadata = metadata_response.data
+    metadata_response = supabase.table('paper_metadata').select(
+        'corpus_id, title, authors, year, venue, url, \
+        citationcount, s2fieldsofstudy, publicationtypes, publicationdate, journal'
+    ).eq('corpus_id', corpus_id).execute()
+    metadata = metadata_response.data[0]
+
+    metadata["authors"] = json.loads(metadata["authors"])
+    metadata["s2fieldsofstudy"] = json.loads(metadata["s2fieldsofstudy"])
+    metadata["publicationtypes"] = json.loads(metadata["publicationtypes"])
+    metadata["journal"] = json.loads(metadata["journal"])
 
     if not metadata:
         raise HTTPException(status_code=404, detail="Paper metadata not found")
@@ -41,7 +49,7 @@ async def read_papers(corpus_id: str):
     abstract_summary = get_abstract_summary(abstract)
 
     result = {
-        "metadata": metadata[0],
+        "metadata": metadata,
         "abstract": abstract,
         "abstract_summary": abstract_summary
     }

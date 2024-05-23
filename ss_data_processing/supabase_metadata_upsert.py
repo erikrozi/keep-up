@@ -26,11 +26,11 @@ def process_jsonl_file(file_path):
             data = json.loads(line.strip())
             # Extract relevant fields from the data
             paper_data = {
-                'corpusid': data.get('corpusid'),
-                'externalids': json.dumps(data.get('externalids')),
+                'corpus_id': data.get('corpusid'),
+                'externalids': data.get('externalids'),
                 'url': data.get('url'),
                 'title': data.get('title'),
-                'authors': json.dumps(data.get('authors')),
+                'authors': data.get('authors'),
                 'venue': data.get('venue'),
                 'publicationvenueid': data.get('publicationvenueid'),
                 'year': data.get('year'),
@@ -38,10 +38,10 @@ def process_jsonl_file(file_path):
                 'citationcount': data.get('citationcount'),
                 'influentialcitationcount': data.get('influentialcitationcount'),
                 'isopenaccess': data.get('isopenaccess'),
-                's2fieldsofstudy': json.dumps(data.get('s2fieldsofstudy')),
-                'publicationtypes': json.dumps(data.get('publicationtypes')),
+                's2fieldsofstudy': data.get('s2fieldsofstudy'),
+                'publicationtypes': data.get('publicationtypes'),
                 'publicationdate': data.get('publicationdate'),
-                'journal': json.dumps(data.get('journal'))
+                'journal': data.get('journal')
             }
             bulk_data.append(paper_data)
             # Upsert in batches of 1000 for efficiency
