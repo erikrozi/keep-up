@@ -55,8 +55,25 @@ const PaperContainer: React.FC<{ paper: any, abstract: any, user: any}> = ({ pap
       }
     };
 
+    const trackPaperView = async () => {
+      if (!user || !paper) {
+        return;
+      }
+
+      const { error } = await supabase
+        .from('seen_papers')
+        .insert([
+          { user_id: user.id, corpus_id: paper.corpus_id }
+        ]);
+
+      if (error) {
+        console.error('Error tracking paper view:', error);
+      }
+    };
+
     fetchLikeCount();
     checkIfLiked();
+    trackPaperView();
   }, [user, paper]);
 
   const toggleLike = async () => {
