@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Checkbox } from "../components/ui/checkbox.tsx"
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form"
-import ProgressBar from '../components/ui/progressbar.js';
+import { Progress } from '../components/ui/progress.tsx';
 import useSupabaseUser from '../hooks/useSupabaseUser';
 import { supabase } from '../../src/utils/supabase.ts';
 
@@ -16,11 +16,6 @@ import {
 } from "../components/ui/form.tsx"
 
 function PersonalInfo() {
-    // const [progress, setProgress] = useState(0);
-    // const handleNextStep = () => {
-    //     setProgress(prevProgress => Math.min(prevProgress + 25, 100));
-    // };
-
     const navigate = useNavigate();
     const form = useForm({
         defaultValues: {
@@ -33,6 +28,7 @@ function PersonalInfo() {
         }
     });
     const [errorMessage, setErrorMessage] = useState('');
+    const progress = 0; // Start of onboarding
 
     const { user, loading, error } = useSupabaseUser();
 
@@ -67,9 +63,9 @@ function PersonalInfo() {
     return (
         <div className="bg-gradient-to-r from-skyblue-500 via-white-500 to-royal-blue-500 flex justify-center items-center min-h-screen">
             <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6">
+                <Progress className="mb-4" value={progress} />
                 <h1 class="mb-4 text-4xl font-bold leading-none tracking-tight text-gray-900">Welcome.</h1>
                 <h2 class="mb-4 text-2xl font-normal text-gray-500">We'd like to get to know you a bit more.</h2>
-                {/* <ProgressBar progress={progress} height="10px" color="#4CAF50" /> */}
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                         <h2 class="mb-2 text-lg font-normal text-gray-500">What is your professional level?</h2>
@@ -189,7 +185,7 @@ function PersonalInfo() {
                                 </FormItem>
                             )}
                         />
-                        <div className="flex items-center">
+                        <div className="flex justify-end">
                             <Button type="submit">Next</Button>
                         </div>
                     </form>
