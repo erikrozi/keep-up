@@ -3,6 +3,8 @@ import { Checkbox } from "../components/ui/checkbox.tsx"
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form"
 import ProgressBar from '../components/ui/progressbar.js';
+import useSupabaseUser from '../hooks/useSupabaseUser';
+import { supabase } from '../../src/utils/supabase.ts';
 
 import { Button } from "../components/ui/button.tsx"
 import {
@@ -14,15 +16,52 @@ import {
 } from "../components/ui/form.tsx"
 
 function PersonalInfo() {
-    const [progress, setProgress] = useState(0);
-    const handleNextStep = () => {
-        setProgress(prevProgress => Math.min(prevProgress + 25, 100));
-    };
+    // const [progress, setProgress] = useState(0);
+    // const handleNextStep = () => {
+    //     setProgress(prevProgress => Math.min(prevProgress + 25, 100));
+    // };
 
     const navigate = useNavigate();
-    const form = useForm();
-    const onSubmit = data => {
-        navigate('/onboardingfive', { state: { data } });
+    const form = useForm({
+        defaultValues: {
+            isStudent: false,
+            isResearcher: false,
+            isProfessional: false,
+            goal1: false,
+            goal2: false,
+            goal3: false
+        }
+    });
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const { user, loading, error } = useSupabaseUser();
+
+    const onSubmit = async (data) => {
+        if (!user) {
+            console.error('User is not logged in.');
+            return;
+        }
+        try {
+            const { error } = await supabase
+                .from('user_info')
+                .upsert({
+                    user_id: user.id,
+                    isstudent: data.isStudent,
+                    isresearcher: data.isResearcher,
+                    isprofessional: data.isProfessional,
+                    goal1: data.goal1,
+                    goal2: data.goal2,
+                    goal3: data.goal3
+                });
+
+            if (error) {
+                throw error;
+            }
+            navigate('/onboardingfive', { state: { data } });
+        } catch (error) {
+            console.error('Error logging interests:', error);
+            setErrorMessage('Failed to log interests. Please try again.');
+        }
     };
 
     return (
@@ -157,7 +196,6 @@ function PersonalInfo() {
                 </Form>
             </div>
         </div>
-        // </div >
     )
 }
 
