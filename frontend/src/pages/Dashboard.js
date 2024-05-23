@@ -24,12 +24,68 @@ import { supabase } from "../utils/supabase.ts";
 import useSupabaseUser from '../hooks/useSupabaseUser'
 
 function Dashboard() {
+  const [paper, setPaper] = useState(null);
+  const [abstract, setAbstract] = useState(null);
+  const [recommendedPaperId, setRecommendedPaperId] = useState(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
 
   const { user, loading, error } = useSupabaseUser();
+  console.log("dashboard user:", user);
   const name = user?.user_metadata.full_name;
   const email = user?.email;
+
+  useEffect(() => {
+    // Fetch the recommended paper ID from your backend
+    const fetchRecommendedPaperId = async () => {
+      // TODO -- Replace with backend logic
+      // const recommendedId = await getRecommendedPaperId();
+      const recommendedId = 257038910;
+      setRecommendedPaperId(recommendedId);
+    };
+
+    fetchRecommendedPaperId();
+  }, []);
+
+  useEffect(() => {
+    if (recommendedPaperId) {
+      const fetchPaperData = async () => {
+        const { data, error } = await supabase
+          .from('paper_metadata')
+          .select('*')
+          .eq('corpus_id', recommendedPaperId);
+
+        if (error) {
+          console.error('Error fetching paper data:', error);
+        } else {
+          console.log("paper: ", data[0]);
+          setPaper(data[0]);
+        }
+      };
+
+      fetchPaperData();
+    }
+  }, [recommendedPaperId]);
+
+  useEffect(() => {
+    if (recommendedPaperId) {
+      const fetchAbstractData = async () => {
+        const { data, error } = await supabase
+          .from('paper_abstract')
+          .select('*')
+          .eq('corpus_id', recommendedPaperId);
+
+        if (error) {
+          console.error('Error fetching paper data:', error);
+        } else {
+          console.log("abstract: ", data[0]);
+          setAbstract(data[0]);
+        }
+      };
+
+      fetchAbstractData();
+    }
+  }, [recommendedPaperId]);
 
   const logout = async () => {
     setIsLoggingOut(true);
@@ -44,6 +100,9 @@ function Dashboard() {
   };
 
   if (loading) return <p>Loading...</p>;
+  if (!paper || !abstract) {
+    return <p>Loading...</p>;
+  }
   if (error) return <p>Error: {error.message}</p>;
 
   return (
@@ -82,23 +141,23 @@ function Dashboard() {
           autoHeight={true}
         >
           <SwiperSlide className="h-fit">
-            <PaperContainer loading="lazy" />
+            <PaperContainer loading="lazy" paper={paper} abstract={abstract} user={user} />
             <div className="swiper-lazy-preloader"></div>
           </SwiperSlide>
           <SwiperSlide className="h-fit">
-            <PaperContainer loading="lazy" />
+            <PaperContainer loading="lazy" paper={paper} abstract={abstract} user={user} />
             <div className="swiper-lazy-preloader"></div>
           </SwiperSlide>
           <SwiperSlide className="h-fit">
-            <PaperContainer loading="lazy" />
+            <PaperContainer loading="lazy" paper={paper} abstract={abstract} user={user} />
             <div className="swiper-lazy-preloader"></div>
           </SwiperSlide>
           <SwiperSlide className="h-fit">
-            <PaperContainer loading="lazy" />
+            <PaperContainer loading="lazy" paper={paper} abstract={abstract} user={user} />
             <div className="swiper-lazy-preloader"></div>
           </SwiperSlide>
           <SwiperSlide className="h-fit">
-            <PaperContainer loading="lazy" />
+            <PaperContainer loading="lazy" paper={paper} abstract={abstract} user={user} />
             <div className="swiper-lazy-preloader"></div>
           </SwiperSlide>
         </Swiper>
