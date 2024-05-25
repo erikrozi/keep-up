@@ -79,7 +79,5 @@ async def get_recommendations(user_id: str):
     if papers_user_viewed:
         exclude_ids = [paper["corpus_id"] for paper in papers_user_viewed]
 
-    return exclude_ids
-
     recs = generate_recommendations(user_id=user_id, exclude_ids=exclude_ids)
     return recs

@@ -22,16 +22,15 @@ def get_n_recent_papers(user_id=None, n=10):
     """
     Find the n most recently liked papers by the user.
     """
-    # Replace this with a query to Supabase database
-    # liked_paper_ids = [106495818, 258277383, 256972193, 259669263, 257310957,
-                    #    259229229, 258109193, 259076375, 257557791, 249072890]
     response = supabase.table('liked_papers')\
         .select("*")\
         .eq('user_id', user_id)\
         .order('timestamp', desc=True)\
         .limit(n)\
         .execute()
-    # TODO: parse response
+    # Extract corpus_ids from the response
+    corpus_ids = [record['corpus_id'] for record in response.data]
+    return corpus_ids
 
 
 def get_user_embedding(user_id=None):
@@ -53,8 +52,6 @@ def get_user_embedding(user_id=None):
 
 
 def main():
-    # embedding = get_user_embedding()
-    # print(embedding)
     get_n_recent_papers(user_id="d4b809c6-668c-410c-b738-e2d2b2320820")
 
 
