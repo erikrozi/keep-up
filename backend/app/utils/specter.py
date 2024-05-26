@@ -22,7 +22,7 @@ def main():
     4. **Medical AI**: Applying AI to medical diagnostics and guidelines.
     5. **Health Informatics**: Using social media data for health research.
     """
-	embedding = get_embedding(test_query_string)
+	embedding = generate_specter_embedding(test_query_string)
 	print(embedding)
 
 if __name__ == '__main__':
