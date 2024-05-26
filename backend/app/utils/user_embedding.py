@@ -3,7 +3,7 @@ import os
 import numpy as np
 from dotenv import load_dotenv
 from supabase import create_client, Client
-
+from pprint import pprint
 
 # Pinecone initialization
 load_dotenv()
@@ -33,7 +33,7 @@ def get_n_recent_papers(user_id=None, n=10):
     return corpus_ids
 
 
-def get_user_embedding(user_id=None):
+def get_user_embedding(user_id):
     """
     Given a user_id, find the user's interests and 10 most recently liked papers
     and generate a SPECTER2 embedding based on the average of the embeddings of
@@ -41,7 +41,8 @@ def get_user_embedding(user_id=None):
 
     TODO: Figure out how to incorporate user's interests into this embedding.
     """
-    n_recent_papers = get_n_recent_papers()
+    n_recent_papers = get_n_recent_papers(user_id=user_id, n=10)
+    n_recent_papers = [str(corpus_id) for corpus_id in n_recent_papers]
     # Get the embeddings of liked papers from Pinecone
     response = index.fetch(n_recent_papers)
     vectors = [response["vectors"][key]["values"]
@@ -52,7 +53,10 @@ def get_user_embedding(user_id=None):
 
 
 def main():
-    get_n_recent_papers(user_id="d4b809c6-668c-410c-b738-e2d2b2320820")
+    test_user_id = "d4b809c6-668c-410c-b738-e2d2b2320820"
+    # get_n_recent_papers(user_id=test_user_id)
+    user_embedding = get_user_embedding(user_id=test_user_id)
+    pprint(user_embedding)
 
 
 if __name__ == "__main__":
