@@ -31,21 +31,17 @@ const NavigationMenu = React.forwardRef<
     />
     {children}
     {/* Profile Section */}
-    <NavigationMenuPrimitive.Item className="ml-auto">
+    <NavigationMenuPrimitive.Item className="ml-auto list-none">
       <NavigationMenuPrimitive.Trigger
-        className={cn(navigationMenuTriggerStyle, "px-4")}
+        className={cn("flex flex-col items-center", navigationMenuTriggerStyle, "px-4")}
       >
         <img
           src={profileImage}
           alt="Profile"
-          style={{
-            height: "40px",
-            width: "40px",
-            borderRadius: "50%",
-          }}
+          className="h-10 w-10 rounded-full"
         />
         <ChevronDown
-          className=" ml-2 h-3 w-3 transition duration-200"
+          className="h-3 w-3 transition duration-200"
           aria-hidden="true"
           style={{ color: "white" }}
         />

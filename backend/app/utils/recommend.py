@@ -22,7 +22,6 @@ def generate_recommendations(user_id=None, k=10, exclude_ids=None):
                            exclude_ids=exclude_ids)
     return [elem['id'] for elem in response["matches"]]
 
-
 def main():
     # Eventually, exclude_ids should be all the papers the user has seen
     liked_paper_ids = [106495818, 258277383, 256972193, 259669263, 257310957,

@@ -9,7 +9,7 @@ import os
 import json
 
 from ..dependencies import verify_token, SUPABASE_KEY, SUPABASE_URL
-from ..utils.summarize import create_abstract_summary
+from ..utils.summarize import create_abstract_summary, create_abstract_results
 
 router = APIRouter(
     prefix="/papers",
@@ -37,21 +37,40 @@ async def read_papers(corpus_id: str):
     ).eq('corpus_id', corpus_id).execute()
     metadata = metadata_response.data[0]
 
-    metadata["authors"] = json.loads(metadata["authors"])
-    metadata["s2fieldsofstudy"] = json.loads(metadata["s2fieldsofstudy"])
-    metadata["publicationtypes"] = json.loads(metadata["publicationtypes"])
-    metadata["journal"] = json.loads(metadata["journal"])
-
     if not metadata:
         raise HTTPException(status_code=404, detail="Paper metadata not found")
     
     abstract = get_abstract(corpus_id)
-    abstract_summary = get_abstract_summary(abstract)
 
     result = {
         "metadata": metadata,
         "abstract": abstract,
-        "abstract_summary": abstract_summary
+    }
+
+    return result
+
+# get abstract summary
+@router.get("/{corpus_id}/summary")
+def get_abstract_summary(corpus_id: str):
+    abstract = get_abstract(corpus_id)
+    abstract_summary = create_abstract_summary(abstract)
+
+    result = {
+        "corpus_id": corpus_id,
+        "summary": abstract_summary,
+    }
+
+    return result
+
+# get abstract results
+@router.get("/{corpus_id}/results")
+def get_abstract_results(corpus_id: str):
+    abstract = get_abstract(corpus_id)
+    abstract_results = create_abstract_results(abstract)
+
+    result = {
+        "corpus_id": corpus_id,
+        "results": abstract_results,
     }
 
     return result
@@ -74,7 +93,7 @@ def get_paper_embeddings(corpus_id: str):
 # NOTE: pinecone query may include the paper itself in the results
 @router.get("/{corpus_id}/related")
 def get_related_papers(corpus_id: str):
-    related = pinecone_index.query(id=corpus_id, top_k=5)
+    related = pinecone_index.query(id=corpus_id, top_k=3)
     if not related:
         raise HTTPException(status_code=404, detail="Related papers not found")
     
@@ -88,6 +107,22 @@ def get_related_papers(corpus_id: str):
         parsed_item['score'] = item['score']
         result.append(parsed_item)
 
+    # get metadata for related papers
+    metadata_response = supabase.table('paper_metadata').select(
+        'corpus_id, title, authors, year, venue, url, \
+        citationcount, s2fieldsofstudy, publicationtypes, publicationdate, journal'
+    ).in_('corpus_id', [item['corpus_id'] for item in result]).execute()
+
+    # create a dictionary of metadata for easy lookup
+    metadata = metadata_response.data
+    metadata_dict = {}
+    for item in metadata:
+        metadata_dict[item['corpus_id']] = item
+
+    # add metadata to result
+    for item in result:
+        item['metadata'] = metadata_dict[int(item['corpus_id'])]
+
     return result
 
 # helper function to get abstracts
@@ -100,7 +135,3 @@ def get_abstract(corpus_id: str):
         raise HTTPException(status_code=404, detail="Paper abstract not found")
 
     return abstract[0]['abstract']
-
-def get_abstract_summary(abstract: str):
-    # Summarize abstract using OpenAI API
-    return create_abstract_summary(abstract)
