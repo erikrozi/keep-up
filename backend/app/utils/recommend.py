@@ -21,7 +21,6 @@ def generate_recommendations(user_id, k=10, exclude_ids=None) -> list[int]:
     """
     Given a user embedding, find the n most similar papers in the database.
     """
-    # return [251945650, 256450785, 257467548, 257242925, 257934105]
     user_embedding = get_user_embedding_gpt(user_id=user_id)
     exclude_ids = exclude_ids or []
     response = index.query(vector=user_embedding, top_k=100,
