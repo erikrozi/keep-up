@@ -33,7 +33,6 @@ async def read_users():
 
 @router.get("/me")
 async def read_users_me(user: dict = Depends(verify_token)):
-    print("Test")
     return user
 
 class View(BaseModel):
@@ -51,7 +50,6 @@ async def post_view(view: View):
         }
         response = supabase.table("viewed_papers").insert(view_data).execute()
     except Exception as e:
-        print(e)
         raise HTTPException(status_code=400, detail="Failed to add view to database")
     
 class Like(BaseModel):

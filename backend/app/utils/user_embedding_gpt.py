@@ -38,7 +38,6 @@ def get_user_embedding_gpt(user_id):
     recent_paper_titles = get_recently_liked_papers(user_id)
     interests = get_user_interests(user_id)
     summary_string = generate_summary_string(recent_paper_titles, interests)
-    print(summary_string)
     return generate_specter_embedding(summary_string)
 
 

@@ -4,7 +4,6 @@ import { Badge } from "./badge.tsx";
 import { Button } from "./button.tsx";
 import { ThumbsUp, Bookmark } from "lucide-react";
 import { supabase } from '../../utils/supabase.ts';
-
 import {
   Dialog,
   DialogContent,
@@ -12,29 +11,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./dialog"
-
+} from "./dialog";
 import api from '../../utils/api.js';
 
-
-const PaperContainer: React.FC<{ corpus_id: any ,user: any}> = ({ corpus_id, user}) => {
-  const [paperData, setPaperData] = useState({
-    abstract: '',
-    metadata: {
-      publicationdate: '',
-      authors: [],
-      citationcount: 0,
-      title: '',
-      venue: '',
-      url: '',
-      year: 0,
-      s2fieldsofstudy: [],
-    }
-  });
-
+const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, user }) => {
+  const [paperData, setPaperData] = useState(null);
   const [paperSummary, setPaperSummary] = useState(''); // Add a new state variable to store the paper summary
   const [paperResults, setPaperResults] = useState(''); // Add a new state variable to store the paper results
   const [relatedPapers, setRelatedPapers] = useState([]); // Add a new state variable to store the related papers
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchPaperData = async () => {
     const response = await api.get('/papers/' + corpus_id);
@@ -57,10 +42,16 @@ const PaperContainer: React.FC<{ corpus_id: any ,user: any}> = ({ corpus_id, use
   }
 
   useEffect(() => {
-    fetchPaperData();
-    fetchPaperSummary();
-    fetchPaperResults();
-    fetchRelatedPapers();
+    const fetchData = async () => {
+      setIsLoading(true);
+      await fetchPaperData();
+      await fetchPaperSummary();
+      await fetchPaperResults();
+      await fetchRelatedPapers();
+      setIsLoading(false);
+    };
+
+    fetchData();
   }, [corpus_id]);
 
   const [isLiked, setIsLiked] = useState(false);
@@ -167,30 +158,35 @@ const PaperContainer: React.FC<{ corpus_id: any ,user: any}> = ({ corpus_id, use
     lastTapRef.current = now;
   };
 
+  if (isLoading) {
+    return (
+      <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6 h-[80vh] overflow-auto flex flex-col align-middle justify-center items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-black"></div>
+        <p className="text-lg text-black">Loading paper...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6 h-[80vh] overflow-auto" onClick={handleDoubleTap}>
       <div className="flex justify-between is-center">
-        <h1 className="text-4xl font-bold mb-4">
+        <h1 className="text-lg sm:text-xl md:text-2xl lg:text-4xl font-bold mb-4">
           {paperData.metadata.title}
         </h1>
-        <div className="flex space-x-2 items-center">
+        <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 md:items-center">
           <Button variant="outline" size="icon" onClick={toggleLike} style={isLiked ? { color: "#3a88fe" } : { color: "#000" }}>
             <ThumbsUp className={`h-5 w-5`} />
             <p>{likeCount}</p>
           </Button>
           <Dialog>
-          <DialogTrigger><Button 
-            variant="outline"
-            size="default">
-            View Abstract
-          </Button></DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle className="text-lg sm:text-xl font-bold mb-4">Abstract</DialogTitle>
-              <DialogDescription className="text-sm sm:text-base text-black">{paperData.abstract}</DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
+            <DialogTrigger><Button variant="outline" size="default">View Abstract</Button></DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="text-lg sm:text-xl font-bold mb-4">Abstract</DialogTitle>
+                <DialogDescription className="text-sm sm:text-base text-black">{paperData.abstract}</DialogDescription>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
           <Button
             variant="purple"
             size="default"
@@ -225,7 +221,6 @@ const PaperContainer: React.FC<{ corpus_id: any ,user: any}> = ({ corpus_id, use
       </div>
 
       <div className="flex flex-wrap mb-4 space-x-2">
-        {/* For item inside s2fieldsofstudy, which is a list of dictionaries, get the value corresponding to key 'category'*/}
         {paperData.metadata.s2fieldsofstudy && paperData.metadata.s2fieldsofstudy.length > 0 && (
           paperData.metadata.s2fieldsofstudy.map((field) => (
             <Badge variant="secondary" key={field.category}>{field.category}</Badge>
@@ -238,10 +233,7 @@ const PaperContainer: React.FC<{ corpus_id: any ,user: any}> = ({ corpus_id, use
           <h2 className="text-lg sm:text-xl font-bold mb-4">Summary</h2>
           <div className="bg-muted p-4 mb-4 rounded-lg text-sm sm:text-base">
             <ReactMarkdown>
-              {/* Render the paper summary, if not summary then loading */}
-              {
-                paperSummary ? paperSummary : 'Generating Summary...'
-              }
+              {paperSummary ? paperSummary : 'Generating Summary...'}
             </ReactMarkdown>
           </div>
           <div className="flex flex-col md:flex-row gap-2 md:gap-8">
@@ -256,29 +248,23 @@ const PaperContainer: React.FC<{ corpus_id: any ,user: any}> = ({ corpus_id, use
             <div className="basis-2/3">
               <h2 className="text-lg sm:text-xl font-bold mb-4">Related Papers</h2>
               <div className="flex flex-wrap mb-4">
-                {/* Render the related papers */
-                  relatedPapers.map((paper) => (
-                    <p key={paper.metadata.corpus_id} className="mr-2 mb-2 bg-gray-200 hover:bg-gray-300 rounded-full py-2 px-4 text-xs sm:text-sm font-bold">
-                      {paper.metadata.title}
-                    </p>
-                  ))      
-                }
+                {relatedPapers.map((paper) => (
+                  <p key={paper.metadata.corpus_id} className="mr-2 mb-2 bg-gray-200 hover:bg-gray-300 rounded-full py-2 px-4 text-xs sm:text-sm font-bold">
+                    {paper.metadata.title}
+                  </p>
+                ))}
               </div>
             </div>
           </div>
         </div>
         <div className="hidden lg:block">
-            <h2 className="text-lg sm:text-xl font-bold mb-4">Results</h2>
-            <div className="bg-muted p-4 mb-4 rounded-lg text-sm sm:text-base">
-              <ReactMarkdown>
-                {/* Render the paper summary, if not summary then loading */}
-                {
-                  paperResults ? paperResults : 'Generating Results...'
-                }
-              </ReactMarkdown>
-              
-            </div>
+          <h2 className="text-lg sm:text-xl font-bold mb-4">Results</h2>
+          <div className="bg-muted p-4 mb-4 rounded-lg text-sm sm:text-base">
+            <ReactMarkdown>
+              {paperResults ? paperResults : 'Generating Results...'}
+            </ReactMarkdown>
           </div>
+        </div>
       </div>
     </div>
   );
