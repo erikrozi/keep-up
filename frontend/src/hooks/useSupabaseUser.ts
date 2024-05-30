@@ -1,6 +1,7 @@
 // useSupabaseUser.js
 import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase.ts';
+import { setAuthToken } from '../utils/api';
 
 const useSupabaseUser = () => {
   const [user, setUser] = useState(null);
@@ -24,8 +25,14 @@ const useSupabaseUser = () => {
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         setUser(session.user);
+        // Store the JWT token in local storage
+        localStorage.setItem('jwtToken', session.access_token);
+        //setAuthToken(session.access_token);
       } else {
         setUser(null);
+        // Remove JWT token from local storage
+        localStorage.removeItem('jwtToken');
+        //setAuthToken(null);
       }
     });
 
@@ -34,6 +41,7 @@ const useSupabaseUser = () => {
       authListener.subscription.unsubscribe();
     };
   }, []);
+
   return { user, loading, error };
 };
 

@@ -10,7 +10,7 @@ from langchain_core.output_parsers import StrOutputParser
 from dotenv import load_dotenv
 from supabase import create_client, Client
 import os
-from specter import generate_specter_embedding
+from .specter import generate_specter_embedding
 
 
 load_dotenv()
@@ -30,11 +30,11 @@ papers.
 
 def main():
     test_user_id = "d4b809c6-668c-410c-b738-e2d2b2320820"
-    embedding = get_user_embedding(test_user_id)
+    embedding = get_user_embedding_gpt(test_user_id)
     print(embedding)
 
 
-def get_user_embedding(user_id):
+def get_user_embedding_gpt(user_id):
     recent_paper_titles = get_recently_liked_papers(user_id)
     interests = get_user_interests(user_id)
     summary_string = generate_summary_string(recent_paper_titles, interests)

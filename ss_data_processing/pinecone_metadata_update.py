@@ -31,8 +31,8 @@ index = pc.Index(PINECONE_INDEX_NAME)
 # Get the metadata from the paper_metadata table
 # Iterate over the entire table using range queries
 
-limit = 1000
-offset = 42000
+limit = 100
+offset = 79000
 continue_fetching = True
 
 # Function to process metadata

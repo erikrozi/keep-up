@@ -31,6 +31,11 @@ pinecone_index = pinecone.Index("specter-embeddings")
 async def read_users():
     return "Get your users here!"
 
+@router.get("/me")
+async def read_users_me(user: dict = Depends(verify_token)):
+    print("Test")
+    return user
+
 class View(BaseModel):
     user_id: str
     corpus_id: int

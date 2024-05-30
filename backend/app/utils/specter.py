@@ -7,7 +7,7 @@ load_dotenv()
 HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
 
 API_URL = "https://api-inference.huggingface.co/models/allenai/specter2_base"
-HEADERS = {f"Authorization": "Bearer {HUGGINGFACE_API_KEY}"}
+HEADERS = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
 
 
 def generate_specter_embedding(input: str):

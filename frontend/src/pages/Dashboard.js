@@ -21,7 +21,8 @@ import "swiper/css/mousewheel";
 import "swiper/css/navigation";
 
 import { supabase } from "../utils/supabase.ts";
-import useSupabaseUser from '../hooks/useSupabaseUser'
+import useSupabaseUser from '../hooks/useSupabaseUser';
+
 
 function Dashboard() {
   const [recommendedPaperId, setRecommendedPaperId] = useState(null);
@@ -106,6 +107,7 @@ function Dashboard() {
           <SwiperSlide className="h-fit">
             <PaperContainer corpus_id={259229229} user={user} />
           </SwiperSlide>
+          
         </Swiper>
       </div>
     </div>
