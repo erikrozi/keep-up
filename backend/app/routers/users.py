@@ -19,7 +19,7 @@ from ..utils.summarize import create_abstract_summary
 router = APIRouter(
     prefix="/users",
     tags=["users"],
-    #dependencies=[Depends(verify_token)],
+    dependencies=[Depends(verify_token)],
     responses={404: {"description": "Not found"}},
 )
 
@@ -76,7 +76,8 @@ async def delete_like(user_id: str, paper_id: int):
 
 # Handle user paper recommendations
 @router.get("/recommend")
-async def get_recommendations(user_id: str):
+async def get_recommendations(user: dict = Depends(verify_token)):
+    user_id = user["sub"]
     exclude_ids = [] # Get all papers this user has viewed
     papers_user_viewed = supabase.table("viewed_papers").select('*').eq("user_id", user_id).execute()
     papers_user_viewed = papers_user_viewed.data

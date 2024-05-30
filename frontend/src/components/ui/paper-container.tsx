@@ -37,22 +37,22 @@ const PaperContainer: React.FC<{ corpus_id: any ,user: any}> = ({ corpus_id, use
   const [relatedPapers, setRelatedPapers] = useState([]); // Add a new state variable to store the related papers
 
   const fetchPaperData = async () => {
-    const response = await api.get('/papers/' + corpus_id); // Change the URL to fetch the paper data
+    const response = await api.get('/papers/' + corpus_id);
     setPaperData(response.data);
   }
 
   const fetchPaperSummary = async () => {
-    const response = await api.get('/papers/' + corpus_id + '/summary'); // Change the URL to fetch the paper summary
+    const response = await api.get('/papers/' + corpus_id + '/summary');
     setPaperSummary(response.data.summary);
   }
 
   const fetchPaperResults = async () => {
-    const response = await api.get('/papers/' + corpus_id + '/results'); // Change the URL to fetch the paper results
+    const response = await api.get('/papers/' + corpus_id + '/results');
     setPaperResults(response.data.results);
   }
 
   const fetchRelatedPapers = async () => {
-    const response = await api.get('/papers/' + corpus_id + '/related'); // Change the URL to fetch the related papers
+    const response = await api.get('/papers/' + corpus_id + '/related');
     setRelatedPapers(response.data);
   }
 

@@ -23,6 +23,8 @@ import "swiper/css/navigation";
 import { supabase } from "../utils/supabase.ts";
 import useSupabaseUser from '../hooks/useSupabaseUser';
 
+import api from "../utils/api";
+
 
 function Dashboard() {
   const [recommendedPaperId, setRecommendedPaperId] = useState(null);
@@ -33,6 +35,17 @@ function Dashboard() {
   console.log("dashboard user:", user);
   const name = user?.user_metadata.full_name;
   const email = user?.email;
+
+  const [ userRecommendations, setUserRecommendations ] = useState([]);
+
+  const fetchUserRecommendations = async () => {
+    const response = await api.get("/users/recommend");
+    setUserRecommendations(response.data);
+  }
+
+  useEffect(() => {
+    fetchUserRecommendations();
+  } , []);
 
   useEffect(() => {
     // Fetch the recommended paper ID from your backend
@@ -93,21 +106,13 @@ function Dashboard() {
           autoHeight={true}
         >
           <SwiperSlide className="h-fit">
-            <PaperContainer corpus_id={106495818} user={user} />
-          </SwiperSlide>
-          <SwiperSlide className="h-fit">
-            <PaperContainer corpus_id={256972193} user={user} />
-          </SwiperSlide>
-          <SwiperSlide className="h-fit">
-            <PaperContainer corpus_id={259669263} user={user} />
-          </SwiperSlide>
-          <SwiperSlide className="h-fit">
-            <PaperContainer corpus_id={257310957} user={user} />
-          </SwiperSlide>
-          <SwiperSlide className="h-fit">
-            <PaperContainer corpus_id={259229229} user={user} />
-          </SwiperSlide>
-          
+              <PaperContainer corpus_id={256230902} user={user} />
+            </SwiperSlide>
+          {userRecommendations.map((paper_id) => (
+            <SwiperSlide className="h-fit">
+              <PaperContainer corpus_id={paper_id} user={user} />
+            </SwiperSlide>
+          ))}
         </Swiper>
       </div>
     </div>

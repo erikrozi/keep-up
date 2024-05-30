@@ -14,7 +14,7 @@ from ..utils.summarize import create_abstract_summary, create_abstract_results
 router = APIRouter(
     prefix="/papers",
     tags=["papers"],
-    #dependencies=[Depends(verify_token)],
+    dependencies=[Depends(verify_token)],
     responses={404: {"description": "Not found"}},
 )
 
