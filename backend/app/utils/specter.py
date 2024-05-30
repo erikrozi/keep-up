@@ -1,6 +1,7 @@
 import requests
 from dotenv import load_dotenv
 import os
+import time
 
 load_dotenv()
 
@@ -11,12 +12,17 @@ HEADERS = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
 
 
 def generate_specter_embedding(input: str):
-	payload = {"inputs": input, "wait_for_model": True}
-	response = requests.post(API_URL, headers=HEADERS, json=payload)
-	response_json = response.json()
-	return response_json[0][0]
-	
+	for _ in range(3):
+		try:
+			payload = {"inputs": input, "wait_for_model": True}
+			response = requests.post(API_URL, headers=HEADERS, json=payload)
+			response_json = response.json()
+			return response_json[0][0]
+		except:
+			print("Error in generating SPECTER embedding. Trying again.")
+			time.sleep(2)
 
+	
 def main():
 	test_query_string = """
 	The user is interested in:
