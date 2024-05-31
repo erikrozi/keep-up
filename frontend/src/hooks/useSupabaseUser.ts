@@ -1,6 +1,8 @@
 // useSupabaseUser.js
 import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase.ts';
+import { setAuthToken } from '../utils/api.js';
+import { set } from 'react-hook-form';
 
 const useSupabaseUser = () => {
   const [user, setUser] = useState(null);
@@ -24,8 +26,10 @@ const useSupabaseUser = () => {
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
         setUser(session.user);
+        setAuthToken(session.access_token);
       } else {
         setUser(null);
+        setAuthToken(null);
       }
     });
 
@@ -34,6 +38,7 @@ const useSupabaseUser = () => {
       authListener.subscription.unsubscribe();
     };
   }, []);
+
   return { user, loading, error };
 };
 
