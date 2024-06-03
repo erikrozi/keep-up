@@ -100,14 +100,17 @@ function Dashboard() {
         </div>
       )}
 
-      <NavigationMenu user={{ name, email }} logout={logout}>
-        <NavigationMenuList>
-        </NavigationMenuList>
-      </NavigationMenu>
-
-      <div className="flex flex-row justify-center items-center mx-10 my-10">
+      <div className="flex flex-col h-full">
+        <div className="flex-none">
+          <NavigationMenu user={{ name, email }} logout={logout}>
+            <NavigationMenuList>
+            </NavigationMenuList>
+          </NavigationMenu>
+        </div>
+        <div className="flex-grow">
+        <div className="flex flex-row justify-center items-center mx-2 my-2 md:mx-10 md:my-10">
         {isRecommendationsLoading ? (
-          <div className="flex flex-col align-middle justify-center items-center rounded-lg p-6 h-[80vh] overflow-auto">
+          <div className="flex flex-col align-middle justify-center items-center rounded-lg p-6 h-screen overflow-auto">
             <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-black"></div>
             <p className="text-lg text-black">Loading recommendations...</p>
           </div>
@@ -137,7 +140,7 @@ function Dashboard() {
             onSlideChange={handleSlideChange}
           >
             {userRecommendations.map((paper_id) => (
-              <SwiperSlide key={paper_id} className="h-fit">
+              <SwiperSlide key={paper_id} className="h-fit flex items-center">
                 <PaperContainer corpus_id={paper_id} user={user} />
               </SwiperSlide>
             ))}
@@ -151,6 +154,8 @@ function Dashboard() {
             )}
           </Swiper>
         )}
+      </div>
+        </div>
       </div>
     </div>
   );

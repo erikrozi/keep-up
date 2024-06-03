@@ -167,10 +167,23 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
     );
   }
 
+  const getTitleFontSize = (title) => {
+    if (title.length > 125) return "text-xs md:text-xl";
+    if (title.length > 100) return "text-m md:text-2xl";
+    if (title.length > 75) return "text-l md:text-3xl";
+    return "text-xl md:text-4xl";
+  };
+
+  const getBodyFontSize = (text) => {
+    if (text.length > 500) return "text-xs md:text-sm lg:text-base";
+    if (text.length > 250) return "text-sm md:text-base";
+    return "text-base md:text-base lg:text-lg";
+  }
+
   return (
-    <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6 h-[80vh] overflow-auto" onClick={handleDoubleTap}>
-      <div className="flex justify-between is-center">
-        <h1 className="text-lg sm:text-xl md:text-2xl lg:text-4xl font-bold mb-4">
+    <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6 h-[80vh] overflow-auto flex flex-col" onClick={handleDoubleTap}>
+      <div className="flex justify-between items-center space-x-1">
+        <h1 className={`${getTitleFontSize(paperData.metadata.title)} font-bold mb-4`}>
           {paperData.metadata.title}
         </h1>
         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 md:items-center">
@@ -178,15 +191,17 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
             <ThumbsUp className={`h-5 w-5`} />
             <p>{likeCount}</p>
           </Button>
-          <Dialog>
-            <DialogTrigger><Button variant="outline" size="default">View Abstract</Button></DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle className="text-lg sm:text-xl font-bold mb-4">Abstract</DialogTitle>
-                <DialogDescription className="text-sm sm:text-base text-black">{paperData.abstract}</DialogDescription>
-              </DialogHeader>
-            </DialogContent>
-          </Dialog>
+          <div className="hidden md:block">
+            <Dialog>
+              <DialogTrigger><Button variant="outline" size="default">View Abstract</Button></DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle className="text-lg sm:text-xl font-bold mb-4">Abstract</DialogTitle>
+                  <DialogDescription className="text-sm sm:text-base text-black">{paperData.abstract}</DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
+          </div>
           <Button
             variant="purple"
             size="default"
@@ -202,7 +217,7 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
         </div>
       </div>
 
-      <div className="flex flex-wrap mb-4 space-x-2 text-gray-500 text-xs">
+      <div className="flex flex-wrap my-1 md:mb-4 space-x-2 text-gray-500 text-xs">
         {paperData.metadata.authors && paperData.metadata.authors.length > 0 && (
           <>
             {paperData.metadata.authors.slice(0, 3).map((author, index) => (
@@ -220,7 +235,7 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
         <p>Citations: {paperData.metadata.citationcount}</p>
       </div>
 
-      <div className="flex flex-wrap mb-4 space-x-2">
+      <div className="hidden md:block flex flex-wrap md:mb-4 space-x-2">
         {paperData.metadata.s2fieldsofstudy && paperData.metadata.s2fieldsofstudy.length > 0 && (
           paperData.metadata.s2fieldsofstudy.map((field) => (
             <Badge variant="secondary" key={field.category}>{field.category}</Badge>
@@ -228,10 +243,10 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 rounded-lg p-4 mb-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 md:gap-8 rounded-lg py-2 md:p-4 mb-4">
         <div>
           <h2 className="text-lg sm:text-xl font-bold mb-4">Summary</h2>
-          <div className="bg-muted p-4 mb-4 rounded-lg text-sm sm:text-base">
+          <div className={`bg-muted p-4 mb-4 rounded-lg ${getBodyFontSize(paperSummary)}`}>
             <ReactMarkdown>
               {paperSummary ? paperSummary : 'Generating Summary...'}
             </ReactMarkdown>
@@ -245,7 +260,7 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
                 </p>
               </div>
             </div>
-            <div className="basis-2/3">
+            <div className="hidden sm:block basis-2/3">
               <h2 className="text-lg sm:text-xl font-bold mb-4">Related Papers</h2>
               <div className="flex flex-wrap mb-4">
                 {relatedPapers.map((paper) => (
@@ -259,7 +274,7 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
         </div>
         <div className="hidden lg:block">
           <h2 className="text-lg sm:text-xl font-bold mb-4">Results</h2>
-          <div className="bg-muted p-4 mb-4 rounded-lg text-sm sm:text-base">
+          <div className={`bg-muted p-4 mb-4 rounded-lg ${getBodyFontSize(paperResults)}`}>
             <ReactMarkdown>
               {paperResults ? paperResults : 'Generating Results...'}
             </ReactMarkdown>
