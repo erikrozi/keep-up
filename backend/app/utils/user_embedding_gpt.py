@@ -68,6 +68,17 @@ def get_recently_liked_papers(user_id, n=10):
 
 
 def get_user_interests(user_id):
+    """
+    Get the user's interests from Supabase.
+
+    For each row, topic_id is the id of the topic and subtopic_id is the id of the subtopic.
+    If the user has not selected a subtopic, subtopic_id will be null.
+    If the user has selected a subtopic, the subtopic_id will be the id of the subtopic.
+
+    The subtopics table maps subtopic ids to subtopic names.
+    The topics table maps topic ids to topic names.
+    
+    Returns:
     return [
         "Cardiology",
         "Molecular Biology",
@@ -75,7 +86,40 @@ def get_user_interests(user_id):
         "Immunology",
         "Hepatology"
     ]
+    """
+    response = supabase.table('user_interests')\
+        .select("topic_id, subtopic_id")\
+        .eq('user_id', user_id)\
+        .execute()
+    
+    interests = []
+    for record in response.data:
+        topic_id = record['topic_id']
+        subtopic_id = record['subtopic_id']
+        topic_name = get_topic_name(topic_id)
+        subtopic_name = get_subtopic_name(subtopic_id)
+        if subtopic_name:
+            interests.append(f"{topic_name} - {subtopic_name}")
+        else:
+            interests.append(topic_name)
+    
+    return interests
 
+def get_topic_name(topic_id):
+    response = supabase.table('topics')\
+        .select("topic_name")\
+        .eq('topic_id', topic_id)\
+        .execute()
+    return response.data[0]['topic_name']
+
+def get_subtopic_name(subtopic_id):
+    if not subtopic_id:
+        return None
+    response = supabase.table('subtopics')\
+        .select("subtopic_name")\
+        .eq('subtopic_id', subtopic_id)\
+        .execute()
+    return response.data[0]['subtopic_name']
 
 def generate_summary_string(recent_paper_titles, user_interests):
 
