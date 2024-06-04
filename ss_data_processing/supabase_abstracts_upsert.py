@@ -19,7 +19,7 @@ def bulk_upsert_paper_data(data):
         # print corpus ids that failed to upsert
         corpus_counts = {}
         for d in data:
-            corpus_counts[d['corpusid']] = corpus_counts.get(d['corpusid'], 0) + 1
+            corpus_counts[d['corpus_id']] = corpus_counts.get(d['corpus_id'], 0) + 1
         # print corpus counts that are greater than 1
         for corpusid, count in corpus_counts.items():
             if count > 1:
@@ -35,14 +35,14 @@ def process_jsonl_file(file_path):
             data = json.loads(line.strip())
             # Extract relevant fields from the data
             paper_data = {
-                'corpusid': data.get('corpusid'),
-                'openaccessinfo': json.dumps(data.get('openaccessinfo')),
+                'corpus_id': data.get('corpusid'),
+                'openaccessinfo': data.get('openaccessinfo'),
                 'abstract': data.get('abstract')
             }
-            if paper_data['corpusid'] in seen_corpusids:
+            if paper_data['corpus_id'] in seen_corpusids:
                 continue
 
-            seen_corpusids.add(paper_data['corpusid'])
+            seen_corpusids.add(paper_data['corpus_id'])
             bulk_data.append(paper_data)
             # Upsert in batches of 1000 for efficiency
             if len(bulk_data) >= 1000:

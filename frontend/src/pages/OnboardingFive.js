@@ -24,15 +24,15 @@ function OnboardingFive() {
   const [subtopics, setSubtopics] = useState([]);
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [selectedSubtopics, setSelectedSubtopics] = useState([]);
+  const [customTopics, setCustomTopics] = useState([]);
+  const [customTopicInput, setCustomTopicInput] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const progress = 50; // Halfway through onboarding
-
 
   useEffect(() => {
     getTopics();
     getSubtopics();
   }, []);
-
 
   async function getTopics() {
     const { data } = await supabase.from("topics").select("topic_id, topic_name");
@@ -82,12 +82,37 @@ function OnboardingFive() {
     }
   };
 
+  const handleCustomTopicChange = (event) => {
+    setCustomTopicInput(event.target.value);
+  };
+
+  const addCustomTopic = () => {
+    if (customTopicInput.trim() === '') return;
+    if (customTopics.length >= 5) {
+      setErrorMessage('You can only add up to 5 custom topics.');
+      return;
+    }
+    setCustomTopics([...customTopics, { topic_name: customTopicInput.trim() }]);
+    setCustomTopicInput('');
+    setErrorMessage('');
+  };
+
+  const removeCustomTopic = (index) => {
+    const newCustomTopics = [...customTopics];
+    newCustomTopics.splice(index, 1);
+    setCustomTopics(newCustomTopics);
+    setErrorMessage('');
+  };
+
   const onSubmit = async () => {
     if (!user) {
       setErrorMessage('User is not logged in.');
       return;
     }
+    
     const interests = [];
+    
+    // Prepare interests for existing topics
     selectedTopics.forEach((topic) => {
       interests.push({
         user_id: user.id,
@@ -103,12 +128,51 @@ function OnboardingFive() {
         }
       });
     });
-    const { error } = await supabase
+
+    // Handle custom topics
+    for (const customTopic of customTopics) {
+      // Check if custom topic already exists
+      const { data: existingTopics, error: fetchError } = await supabase
+        .from('topics')
+        .select('topic_id')
+        .eq('topic_name', customTopic.topic_name);
+      
+      if (fetchError) {
+        console.error('Error fetching topics:', fetchError);
+        setErrorMessage('Failed to fetch topics. Please try again.');
+        return;
+      }
+
+      let topicId;
+      if (existingTopics.length > 0) {
+        // Topic already exists
+        topicId = existingTopics[0].topic_id;
+      } else {
+        // Add new custom topic
+        const { data: newTopicData, error: topicError } = await supabase
+          .from('topics')
+          .insert([{ topic_name: customTopic.topic_name }])
+          .select();
+        if (topicError) {
+          console.error('Error adding custom topic:', topicError);
+          setErrorMessage('Failed to add custom topic. Please try again.');
+          return;
+        }
+        topicId = newTopicData[0].topic_id;
+      }
+
+      interests.push({
+        user_id: user.id,
+        topic_id: topicId,
+      });
+    }
+
+    const { error: interestsError } = await supabase
       .from('user_interests')
       .insert(interests);
 
-    if (error) {
-      console.error('Error logging interests:', error);
+    if (interestsError) {
+      console.error('Error logging interests:', interestsError);
       setErrorMessage('Failed to log interests. Please try again.');
     } else {
       // Redirect to dashboard
@@ -125,7 +189,7 @@ function OnboardingFive() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
             <h2 className="mb-2 text-lg font-normal text-gray-500">Select up to 5 topics of interest.</h2>
-            {topics.map((topic, index) => (
+            {topics.filter(topic => topic.topic_id >= 1 && topic.topic_id <= 10).map((topic, index) => (
               <div key={index} className="mb-4">
                 <FormField
                   control={form.control}
@@ -154,7 +218,7 @@ function OnboardingFive() {
                     {subtopics.filter(subtopic => subtopic.topic_id === topic.topic_id).map((subtopic) => (
                       <button
                         type="button"
-                        key={subtopic}
+                        key={subtopic.subtopic_id}
                         className={`m-1 px-2 py-1 rounded-full border ${selectedSubtopics.includes(subtopic) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
                         onClick={() => handleSubtopicChange(subtopic)}
                       >
@@ -165,6 +229,27 @@ function OnboardingFive() {
                 )}
               </div>
             ))}
+            <div className="mt-4">
+              <h2 className="mb-2 text-lg font-normal text-gray-500">Add up to 5 custom topics of interest.</h2>
+              <div className="flex items-center mb-2">
+                <input
+                  type="text"
+                  value={customTopicInput}
+                  onChange={handleCustomTopicChange}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  placeholder="Enter custom topic"
+                />
+                <Button type="button" onClick={addCustomTopic} className="ml-2">Add</Button>
+              </div>
+              <div className="flex flex-wrap">
+                {customTopics.map((customTopic, index) => (
+                  <div key={index} className="flex items-center m-1 px-2 py-1 rounded-full border bg-gray-200 text-gray-800">
+                    <span>{customTopic.topic_name}</span>
+                    <button type="button" onClick={() => removeCustomTopic(index)} className="ml-2 text-red-500">x</button>
+                  </div>
+                ))}
+              </div>
+            </div>
             {errorMessage && <p className="text-red-500">{errorMessage}</p>}
             <div className="flex items-center justify-between">
               <Button type="button" onClick={handleBack}>Back</Button>
