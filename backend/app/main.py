@@ -2,7 +2,7 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .dependencies import verify_token
-from .routers import papers, users
+from .routers import papers, users, search
 
 #app = FastAPI(dependencies=[Depends(verify_token)])
 app = FastAPI()
@@ -23,6 +23,7 @@ app.add_middleware(
 
 app.include_router(papers.router)
 app.include_router(users.router)
+app.include_router(search.router)
 
 
 @app.get("/")
