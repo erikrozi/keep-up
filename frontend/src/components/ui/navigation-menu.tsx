@@ -2,6 +2,7 @@ import * as React from "react";
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu";
 import { cva } from "class-variance-authority";
 import { ChevronDown, ChevronDownCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { cn } from "../../utils";
 import logo from "../../assets/LogoAndNameBig.png"; // Import your logo image here
@@ -24,11 +25,13 @@ const NavigationMenu = React.forwardRef<
     {...props}
   >
     {/* Logo image */}
-    <img
-      src={logo}
-      alt="Logo"
-      style={{ height: "100%", marginLeft: "20px", marginRight: "auto" }}
-    />
+    <Link to="/dashboard" style={{ height: "100%", marginLeft: "20px", marginRight: "auto", display: "flex", alignItems: "center" }}>
+      <img
+        src={logo}
+        alt="Logo"
+        style={{ height: "100%" }}
+      />
+    </Link>
     {children}
     {/* Profile Section */}
     <NavigationMenuPrimitive.Item className="ml-auto list-none">
