@@ -17,6 +17,10 @@ import {
 
 function PersonalInfo() {
     const navigate = useNavigate();
+    const { user, loading, error } = useSupabaseUser();
+    const [errorMessage, setErrorMessage] = useState('');
+    const progress = 0; // Start of onboarding
+
     const form = useForm({
         defaultValues: {
             isStudent: false,
@@ -27,10 +31,33 @@ function PersonalInfo() {
             goal3: false
         }
     });
-    const [errorMessage, setErrorMessage] = useState('');
-    const progress = 0; // Start of onboarding
 
-    const { user, loading, error } = useSupabaseUser();
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!user) return;
+
+            const { data, error } = await supabase
+                .from('user_info')
+                .select('isstudent, isresearcher, isprofessional, goal1, goal2, goal3')
+                .eq('user_id', user.id)
+                .single();
+
+            if (error) {
+                console.error('Error fetching user info:', error);
+            } else if (data) {
+                form.reset({
+                    isStudent: data.isstudent,
+                    isResearcher: data.isresearcher,
+                    isProfessional: data.isprofessional,
+                    goal1: data.goal1,
+                    goal2: data.goal2,
+                    goal3: data.goal3
+                });
+            }
+        };
+
+        fetchData();
+    }, [user]);
 
     const onSubmit = async (data) => {
         if (!user) {
@@ -190,6 +217,7 @@ function PersonalInfo() {
                         </div>
                     </form>
                 </Form>
+                {errorMessage && <p className="text-red-500 mt-4">{errorMessage}</p>}
             </div>
         </div>
     )

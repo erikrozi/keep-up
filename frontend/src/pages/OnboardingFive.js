@@ -32,7 +32,12 @@ function OnboardingFive() {
   useEffect(() => {
     getTopics();
     getSubtopics();
-  }, []);
+    if (user) {
+      getUserTopics(user.id);
+      getUserSubtopics(user.id);
+      getUserCustomTopics(user.id);
+    }
+  }, [user]);
 
   async function getTopics() {
     const { data } = await supabase.from("topics").select("topic_id, topic_name");
@@ -44,12 +49,110 @@ function OnboardingFive() {
     setSubtopics(data);
   }
 
+  async function getUserTopics(userId) {
+    // Get topics with topic id <= 10
+    const { data: userInterestsData, error } = await supabase
+      .from("user_interests")
+      .select("topic_id, topics (topic_name)")
+      .eq("user_id", userId)
+      .is("subtopic_id", null)
+      .gte("topic_id", 1)
+      .lte("topic_id", 10);
+
+    if (error) {
+      console.error("Error fetching user interests:", error);
+      setErrorMessage('Failed to fetch user interests. Please try again.');
+      return;
+    }
+
+    if (userInterestsData) {
+      const selectedTopicsData = userInterestsData.map(interest => ({
+        topic_id: interest.topic_id,
+        topic_name: interest.topics.topic_name
+      }));
+
+      setSelectedTopics(selectedTopicsData);
+    }
+  }
+
+  async function getUserSubtopics(userId) {
+    const { data: userSubinterestsData, error } = await supabase
+      .from("user_interests")
+      .select(`
+        topic_id,
+        subtopic_id,
+        subtopics (subtopic_name)
+      `)
+      .eq("user_id", userId)
+      .not("subtopic_id", "is", null);
+
+    if (error) {
+      console.error("Error fetching user subinterests:", error);
+      setErrorMessage('Failed to fetch user subinterests. Please try again.');
+      return;
+    }
+
+    if (userSubinterestsData) {
+      const selectedSubtopicsData = userSubinterestsData.map(interest => ({
+        topic_id: interest.topic_id,
+        subtopic_id: interest.subtopic_id,
+        subtopic_name: interest.subtopics.subtopic_name
+      }));
+
+      setSelectedSubtopics(selectedSubtopicsData);
+    } 
+  }
+
+
+  async function getUserCustomTopics(userId) {
+    const { data: userCustomInterestsData, error } = await supabase
+      .from("user_interests")
+      .select(`
+        topic_id,
+        topics (topic_name)
+      `)
+      .eq("user_id", userId)
+      .gt("topic_id", 10);
+
+    if (error) {
+      console.error("Error fetching user custom interests:", error);
+      setErrorMessage('Failed to fetch user custom interests. Please try again.');
+      return;
+    }
+
+    if (userCustomInterestsData) {
+      const selectedCustomTopicsData = userCustomInterestsData.map(interest => ({
+        topic_id: interest.topic_id,
+        topic_name: interest.topics.topic_name
+      }));
+
+      setCustomTopics(selectedCustomTopicsData);
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   const handleBack = () => {
     navigate('/personalInfo'); // Adjust the path to your previous step
   };
 
   const handleCheckboxChange = (topic) => {
-    const isSelected = selectedTopics.includes(topic);
+    const isSelected = selectedTopics.some(selected => selected.topic_id === topic.topic_id);
     if (isSelected) {
       setSelectedTopics(selectedTopics.filter((item) => item.topic_id !== topic.topic_id));
 
@@ -68,7 +171,7 @@ function OnboardingFive() {
   };
 
   const handleSubtopicChange = (subtopic) => {
-    const isSelected = selectedSubtopics.includes(subtopic);
+    const isSelected = selectedSubtopics.some(selected => selected.subtopic_id === subtopic.subtopic_id);
     if (isSelected) {
       setSelectedSubtopics(selectedSubtopics.filter((item) => item.subtopic_id !== subtopic.subtopic_id));
       setErrorMessage(''); // Clear error message when unchecking
@@ -86,16 +189,27 @@ function OnboardingFive() {
     setCustomTopicInput(event.target.value);
   };
 
-  const addCustomTopic = () => {
+ 
+ const addCustomTopic = () => {
     if (customTopicInput.trim() === '') return;
+    
+    // Check if the custom topic already exists
+    if (customTopics.some(topic => topic.topic_name === customTopicInput.trim())) {
+      setErrorMessage('Custom topic already exists.');
+      return;
+    }
+
+    // Check if the maximum limit of custom topics has been reached
     if (customTopics.length >= 5) {
       setErrorMessage('You can only add up to 5 custom topics.');
       return;
     }
+    
+    // Add the custom topic
     setCustomTopics([...customTopics, { topic_name: customTopicInput.trim() }]);
     setCustomTopicInput('');
     setErrorMessage('');
-  };
+ };
 
   const removeCustomTopic = (index) => {
     const newCustomTopics = [...customTopics];
@@ -104,81 +218,174 @@ function OnboardingFive() {
     setErrorMessage('');
   };
 
-  const onSubmit = async () => {
-    if (!user) {
-      setErrorMessage('User is not logged in.');
+
+
+
+
+
+
+
+
+
+const onSubmit = async () => {
+  if (!user) {
+    setErrorMessage('User is not logged in.');
+    return;
+  }
+
+  const userId = user.id;
+  const interests = [];
+
+  // Prepare interests for existing topics and subtopics
+  selectedTopics.forEach((topic) => {
+    interests.push({
+      user_id: userId,
+      topic_id: topic.topic_id,
+    });
+    selectedSubtopics.forEach((subtopic) => {
+      if (subtopic.topic_id === topic.topic_id) {
+        interests.push({
+          user_id: userId,
+          topic_id: topic.topic_id,
+          subtopic_id: subtopic.subtopic_id,
+        });
+      }
+    });
+  });
+
+  // Handle custom topics
+  for (const customTopic of customTopics) {
+    // Check if custom topic already exists
+    const { data: existingTopics, error: fetchError } = await supabase
+      .from('topics')
+      .select('topic_id')
+      .eq('topic_name', customTopic.topic_name);
+
+    if (fetchError) {
+      console.error('Error fetching topics:', fetchError);
+      setErrorMessage('Failed to fetch topics. Please try again.');
       return;
     }
-    
-    const interests = [];
-    
-    // Prepare interests for existing topics
-    selectedTopics.forEach((topic) => {
-      interests.push({
-        user_id: user.id,
-        topic_id: topic.topic_id,
-      });
-      selectedSubtopics.forEach((subtopic) => {
-        if (subtopic.topic_id === topic.topic_id) {
-          interests.push({
-            user_id: user.id,
-            topic_id: topic.topic_id,
-            subtopic_id: subtopic.subtopic_id,
-          });
-        }
-      });
-    });
 
-    // Handle custom topics
-    for (const customTopic of customTopics) {
-      // Check if custom topic already exists
-      const { data: existingTopics, error: fetchError } = await supabase
+    let topicId;
+    if (existingTopics.length > 0) {
+      // Topic already exists
+      topicId = existingTopics[0].topic_id;
+    } else {
+      // Add new custom topic
+      const { data: newTopicData, error: topicError } = await supabase
         .from('topics')
-        .select('topic_id')
-        .eq('topic_name', customTopic.topic_name);
-      
-      if (fetchError) {
-        console.error('Error fetching topics:', fetchError);
-        setErrorMessage('Failed to fetch topics. Please try again.');
+        .insert([{ topic_name: customTopic.topic_name }])
+        .select();
+      if (topicError) {
+        console.error('Error adding custom topic:', topicError);
+        setErrorMessage('Failed to add custom topic. Please try again.');
         return;
       }
-
-      let topicId;
-      if (existingTopics.length > 0) {
-        // Topic already exists
-        topicId = existingTopics[0].topic_id;
-      } else {
-        // Add new custom topic
-        const { data: newTopicData, error: topicError } = await supabase
-          .from('topics')
-          .insert([{ topic_name: customTopic.topic_name }])
-          .select();
-        if (topicError) {
-          console.error('Error adding custom topic:', topicError);
-          setErrorMessage('Failed to add custom topic. Please try again.');
-          return;
-        }
-        topicId = newTopicData[0].topic_id;
-      }
-
-      interests.push({
-        user_id: user.id,
-        topic_id: topicId,
-      });
+      topicId = newTopicData[0].topic_id;
     }
 
-    const { error: interestsError } = await supabase
-      .from('user_interests')
-      .insert(interests);
+    interests.push({
+      user_id: userId,
+      topic_id: topicId,
+    });
+  }
 
-    if (interestsError) {
-      console.error('Error logging interests:', interestsError);
-      setErrorMessage('Failed to log interests. Please try again.');
-    } else {
-      // Redirect to dashboard
-      navigate("/dashboard", { state: { selectedTopics, selectedSubtopics } });
+  // Fetch the existing interests from the database
+  const { data: existingInterests, error: fetchInterestsError } = await supabase
+    .from('user_interests')
+    .select('id, topic_id, subtopic_id')
+    .eq('user_id', userId);
+
+  if (fetchInterestsError) {
+    console.error('Error fetching existing interests:', fetchInterestsError);
+    setErrorMessage('Failed to fetch existing interests. Please try again.');
+    return;
+  }
+
+
+  // Identify interests to be removed
+  const interestsToRemove = existingInterests.filter(existingInterest => {
+    const isNonCustomTopic = !existingInterest.subtopic_id && existingInterest.topic_id <= 10;
+    const isCustomTopic = !existingInterest.subtopic_id && existingInterest.topic_id > 10;
+    if (isNonCustomTopic) {
+      return !selectedTopics.some(selectedTopic => selectedTopic.topic_id === existingInterest.topic_id);
+    } 
+    else if (isCustomTopic) {
+      return !customTopics.some(customTopic => customTopic.topic_id === existingInterest.topic_id);
     }
-  };
+    else {
+      return !selectedSubtopics.some(selectedSubtopic => selectedSubtopic.subtopic_id === existingInterest.subtopic_id);
+    }
+  });
+
+  // Remove outdated interests
+  const { error: deleteError } = await supabase
+    .from('user_interests')
+    .delete()
+    .in('id', interestsToRemove.map(interest => interest.id));
+
+  if (deleteError) {
+    console.error('Error removing outdated interests:', deleteError);
+    setErrorMessage('Failed to remove outdated interests. Please try again.');
+    return;
+  }
+
+  // Identify interests that already exist
+  const existingInterestIds = existingInterests.map(interest => ({
+    topic_id: interest.topic_id,
+    subtopic_id: interest.subtopic_id
+  }));
+
+  // Filter out interests that already exist
+  const newInterests = interests.filter(interest => {
+    const existingInterestIndex = existingInterestIds.findIndex(existingInterest =>
+      existingInterest.topic_id === interest.topic_id &&
+      (!existingInterest.subtopic_id || existingInterest.subtopic_id === interest.subtopic_id)
+    );
+    return existingInterestIndex === -1;
+  });
+
+  // Insert only new interests
+  const { error: insertError } = await supabase
+    .from('user_interests')
+    .insert(newInterests);
+
+  if (insertError) {
+    console.error('Error logging interests:', insertError);
+    setErrorMessage('Failed to log interests. Please try again.');
+  } else {
+    // Redirect to dashboard
+    navigate("/dashboard", { state: { selectedTopics, selectedSubtopics } });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   return (
     <div className="bg-gradient-to-r from-skyblue-500 via-white-500 to-royal-blue-500 flex justify-center items-center min-h-screen">
@@ -198,7 +405,7 @@ function OnboardingFive() {
                     <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-4">
                       <FormControl>
                         <Checkbox
-                          checked={selectedTopics.includes(topic)}
+                          checked={selectedTopics.some(selected => selected.topic_id === topic.topic_id)}
                           onCheckedChange={() => {
                             handleCheckboxChange(topic);
                             field.onChange(!selectedTopics.includes(topic));
@@ -213,13 +420,13 @@ function OnboardingFive() {
                     </FormItem>
                   )}
                 />
-                {selectedTopics.includes(topic) && (
+                {selectedTopics.some(selected => selected.topic_id === topic.topic_id) && (
                   <div className="ml-8 mt-2 flex flex-wrap">
                     {subtopics.filter(subtopic => subtopic.topic_id === topic.topic_id).map((subtopic) => (
                       <button
                         type="button"
                         key={subtopic.subtopic_id}
-                        className={`m-1 px-2 py-1 rounded-full border ${selectedSubtopics.includes(subtopic) ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
+                        className={`m-1 px-2 py-1 rounded-full border ${selectedSubtopics.some(selected => selected.subtopic_id === subtopic.subtopic_id)? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'}`}
                         onClick={() => handleSubtopicChange(subtopic)}
                       >
                         {subtopic.subtopic_name}
