@@ -16,14 +16,12 @@ import useSupabaseUser from '../hooks/useSupabaseUser';
 import api from "../utils/api";
 
 function Dashboard() {
-  const [recommendedPaperId, setRecommendedPaperId] = useState(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isRecommendationsLoading, setIsRecommendationsLoading] = useState(true);
   const [isMoreLoading, setIsMoreLoading] = useState(false);
   const [showInstructions, setShowInstructions] = useState(true);
   const navigate = useNavigate();
   const { user, loading, error } = useSupabaseUser();
-  console.log("dashboard user:", user);
   const name = user?.user_metadata.full_name;
   const email = user?.email;
   const [userRecommendations, setUserRecommendations] = useState([]);
@@ -56,12 +54,6 @@ function Dashboard() {
     fetchUserRecommendations();
   }, []);
 
-  const handleSlideChange = (swiper) => {
-    if (swiper.activeIndex === swiper.slides.length - 2 && !isMoreLoading) {
-      fetchMoreRecommendations();
-    }
-  };
-
   const logout = async () => {
     setIsLoggingOut(true);
     try {
@@ -71,6 +63,26 @@ function Dashboard() {
       console.error('Error during logout:', error);
     } finally {
       setIsLoggingOut(false);
+    }
+  };
+
+  // When the user first views a new paper, we want to mark it as viewed
+  const markPaperAsViewed = async (paper_id) => {
+    try {
+      await api.post("/users/viewed", { corpus_id: paper_id });
+    } catch (error) {
+      console.error('Error marking paper as viewed:', error);
+    }
+  };
+
+  const handleSlideChange = (swiper) => {
+    if (swiper.activeIndex === swiper.slides.length - 2 && !isMoreLoading) {
+      fetchMoreRecommendations();
+    }
+
+    // If not is more loading or not last slide, mark the paper as viewed
+    if (!isMoreLoading && swiper.activeIndex < userRecommendations.length) {
+      markPaperAsViewed(userRecommendations[swiper.activeIndex]);
     }
   };
 
