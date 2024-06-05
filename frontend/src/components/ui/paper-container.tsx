@@ -45,10 +45,9 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
     const fetchData = async () => {
       setIsLoading(true);
       await fetchPaperData();
-      await fetchPaperSummary();
-      await fetchPaperResults();
-      await fetchRelatedPapers();
       setIsLoading(false);
+      // fetchPaperSummary and results concurrently
+      await Promise.all([fetchPaperSummary(), fetchPaperResults(), fetchRelatedPapers()]);
     };
 
     fetchData();
@@ -174,6 +173,18 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
     return "text-xl md:text-4xl";
   };
 
+  // Add a function that capitalizes titles properly, e.g. "the" -> "The".
+  // Don't capitalize words like "and" or "of" unless they are the first word.
+  const capitalizeTitle = (title) => {
+    const lowercaseWords = ['a', 'an', 'the', 'and', 'but', 'or', 'for', 'nor', 'on', 'at', 'to', 'from', 'by', 'with', 'in', 'of', 'as'];
+    return title.split(' ').map((word, index) => {
+      if (index === 0 || !lowercaseWords.includes(word)) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      }
+      return word;
+    }).join(' ');
+  }
+
   const getBodyFontSize = (text) => {
     if (text.length > 500) return "text-xs md:text-sm lg:text-base";
     if (text.length > 250) return "text-sm md:text-base";
@@ -184,7 +195,7 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
     <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6 h-[80vh] overflow-auto flex flex-col" onClick={handleDoubleTap}>
       <div className="flex justify-between items-center space-x-1">
         <h1 className={`${getTitleFontSize(paperData.metadata.title)} font-bold mb-4`}>
-          {paperData.metadata.title}
+          {capitalizeTitle(paperData.metadata.title)}
         </h1>
         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 md:items-center">
           <Button variant="outline" size="icon" onClick={toggleLike} style={isLiked ? { color: "#3a88fe" } : { color: "#000" }}>
@@ -255,8 +266,8 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
             <div className="basis-1/3">
               <h2 className="text-lg sm:text-xl font-bold mb-4">Paper Venue</h2>
               <div className="flex flex-wrap mb-4">
-                <p className="mr-2 mb-2 bg-[#2B59C3] rounded-full py-2 px-4 text-xs sm:text-sm text-white font-bold items-center">
-                  {paperData.metadata.venue}
+                <p className="mr-2 mb-2 bg-[#2B59C3] rounded-3xl py-2 px-4 text-xs sm:text-sm text-white font-bold items-center">
+                  {paperData.metadata.venue ? paperData.metadata.venue : 'N/A'}
                 </p>
               </div>
             </div>
@@ -264,8 +275,8 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
               <h2 className="text-lg sm:text-xl font-bold mb-4">Related Papers</h2>
               <div className="flex flex-wrap mb-4">
                 {relatedPapers.map((paper) => (
-                  <p key={paper.metadata.corpus_id} className="mr-2 mb-2 bg-gray-200 hover:bg-gray-300 rounded-full py-2 px-4 text-xs sm:text-sm font-bold">
-                    {paper.metadata.title}
+                  <p key={paper.id} onClick={() => window.open(paper.metadata.url, "_blank")} className="mr-2 mb-2 bg-gray-200 hover:bg-gray-300 rounded-3xl py-2 px-4 text-xs sm:text-sm font-bold">
+                    {capitalizeTitle(paper.metadata.title)}
                   </p>
                 ))}
               </div>

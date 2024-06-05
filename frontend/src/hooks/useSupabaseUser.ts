@@ -14,6 +14,9 @@ const useSupabaseUser = () => {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error) {
         setError(error);
+        await supabase.auth.signOut();
+        setUser(null);
+        setAuthToken(null);
       } else {
         setUser(user);
       }

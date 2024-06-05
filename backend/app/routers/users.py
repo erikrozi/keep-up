@@ -8,13 +8,15 @@ from datetime import datetime
 from supabase import create_client, Client
 from pinecone import Pinecone
 
-from ..utils.recommend import generate_recommendations
+from ..utils.recommend import generate_user_recommendations
 
 import os
 import json
 
 from ..dependencies import verify_token, SUPABASE_KEY, SUPABASE_URL
 from ..utils.summarize import create_abstract_summary
+
+EXCLUDE_LIMIT = 50 # Maximum number of papers to exclude from recommendations
 
 router = APIRouter(
     prefix="/users",
@@ -36,15 +38,14 @@ async def read_users_me(user: dict = Depends(verify_token)):
     return user
 
 class View(BaseModel):
-    user_id: str
     corpus_id: int
 
-@router.post("/view")
-async def post_view(view: View):
+@router.post("/viewed")
+async def post_view(view: View, user: dict = Depends(verify_token)):
     # Add view to Supabase
     try:
         view_data = {
-            "user_id": view.user_id,
+            "user_id": user["sub"],
             "corpus_id": view.corpus_id,
             "timestamp": datetime.now().isoformat()
         }
@@ -76,12 +77,11 @@ async def delete_like(user_id: str, paper_id: int):
 @router.get("/recommend")
 async def get_recommendations(user: dict = Depends(verify_token)):
     user_id = user["sub"]
-    exclude_ids = [] # Get all papers this user has viewed
-    papers_user_viewed = supabase.table("viewed_papers").select('*').eq("user_id", user_id).execute()
-    papers_user_viewed = papers_user_viewed.data
+    exclude_ids = []
+    papers_user_viewed = supabase.table("viewed_papers").select('*').eq('user_id', user_id).order('timestamp', desc=True).limit(EXCLUDE_LIMIT).execute()
 
-    if papers_user_viewed:
-        exclude_ids = [paper["corpus_id"] for paper in papers_user_viewed]
+    for paper in papers_user_viewed.data:
+        exclude_ids.append(paper['corpus_id'])
 
-    recs = generate_recommendations(user_id=user_id, exclude_ids=exclude_ids)
+    recs = generate_user_recommendations(user_id=user_id, exclude_ids=exclude_ids)
     return recs
