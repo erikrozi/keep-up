@@ -9,6 +9,7 @@ import LandingPage from "./pages/Landing";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import DeepdivePage from "./pages/DeepdivePage";
 import RedirectIfAuthenticated from "./components/RedirectIfAuthenticated";
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route exact path="/dashboard/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route exact path="/onboardingfive/" element={<ProtectedRoute><OnboardingFive /></ProtectedRoute>} />
           <Route exact path="/personalInfo/" element={<ProtectedRoute><PersonalInfo /></ProtectedRoute>} />
+          <Route path="/deepdive/:corpus_id" element={<ProtectedRoute><DeepdivePage /></ProtectedRoute>} />
         </Routes>
       </Router>
     </div>

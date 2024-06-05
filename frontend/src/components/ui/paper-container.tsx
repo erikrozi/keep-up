@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
+import { useNavigate } from "react-router-dom";
 import { Badge } from "./badge.tsx";
 import { Button } from "./button.tsx";
 import { ThumbsUp, Bookmark } from "lucide-react";
@@ -20,6 +21,7 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
   const [paperResults, setPaperResults] = useState(''); // Add a new state variable to store the paper results
   const [relatedPapers, setRelatedPapers] = useState([]); // Add a new state variable to store the related papers
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchPaperData = async () => {
     const response = await api.get('/papers/' + corpus_id);
@@ -289,6 +291,15 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
             <ReactMarkdown>
               {paperResults ? paperResults : 'Generating Results...'}
             </ReactMarkdown>
+          </div>
+          <div className="flex">
+            <Button
+              variant="default"
+              size="default"
+              onClick={() => navigate(`/deepdive/${corpus_id}`)}
+            >
+              Deep dive into other similar papers!
+            </Button>
           </div>
         </div>
       </div>

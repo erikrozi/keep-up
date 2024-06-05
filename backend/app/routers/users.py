@@ -8,7 +8,7 @@ from datetime import datetime
 from supabase import create_client, Client
 from pinecone import Pinecone
 
-from ..utils.recommend import generate_user_recommendations
+from ..utils.recommend import generate_user_recommendations, recommend_from_id
 
 import os
 import json
@@ -16,7 +16,7 @@ import json
 from ..dependencies import verify_token, SUPABASE_KEY, SUPABASE_URL
 from ..utils.summarize import create_abstract_summary
 
-EXCLUDE_LIMIT = 50 # Maximum number of papers to exclude from recommendations
+EXCLUDE_LIMIT = 100 # Maximum number of papers to exclude from recommendations
 
 router = APIRouter(
     prefix="/users",
@@ -85,3 +85,32 @@ async def get_recommendations(user: dict = Depends(verify_token)):
 
     recs = generate_user_recommendations(user_id=user_id, exclude_ids=exclude_ids)
     return recs
+
+# get deepdive of additional recommendations
+# returns list of related papers
+@router.get("/deepdive/{corpus_id}")
+def get_deepdive_recommendations(corpus_id: str, user: dict = Depends(verify_token)):
+    user_id = user["sub"]
+
+    # get metadata for the paper
+    metadata_response = supabase.table('paper_metadata').select(
+        'corpus_id, title, authors, year, venue, url, \
+        citationcount, s2fieldsofstudy, publicationtypes, publicationdate, journal'
+    ).eq('corpus_id', corpus_id).execute()
+    metadata = metadata_response.data[0]
+
+    if not metadata:
+        raise HTTPException(status_code=404, detail="Paper metadata not found")
+    
+    # TODO: Change exclude ids?
+    exclude_ids = [corpus_id]
+    papers_user_viewed = supabase.table("viewed_papers").select('*').eq('user_id', user_id).order('timestamp', desc=True).limit(EXCLUDE_LIMIT).execute()
+
+    for paper in papers_user_viewed.data:
+        exclude_ids.append(paper['corpus_id'])
+    
+    recs = recommend_from_id(corpus_id, k=10, sample_size=50, exclude_ids=exclude_ids)
+    return {
+        "paper_data": metadata,
+        "recommendations": recs
+    }
