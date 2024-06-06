@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu";
+import { useNavigate } from 'react-router-dom';
 import { cva } from "class-variance-authority";
 import { ChevronDown } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,6 +8,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { cn } from "../../utils";
 import logo from "../../assets/LogoAndNameBig.png"; // Import your logo image here
 import profileImage from "../../assets/UserProfile.png"; // Your profile image here
+
+import { Link } from "react-router-dom"; 
 
 const NavigationMenu = React.forwardRef<
   React.ElementRef<typeof NavigationMenuPrimitive.Root>,
@@ -79,7 +82,11 @@ const NavigationMenu = React.forwardRef<
           <img
             src={profileImage}
             alt="Profile"
-            className="h-10 w-10 rounded-full"
+            style={{
+              height: "40px",
+              width: "40px",
+              borderRadius: "50%",
+            }}
           />
           <ChevronDown
             className="h-3 w-3 transition duration-200"
@@ -93,6 +100,15 @@ const NavigationMenu = React.forwardRef<
             "origin-top-right absolute right-0 mt-1 w-48 rounded-md shadow-lg bg-white"
           )}
         >
+
+          {/* Profile Button */}
+          <button
+            onClick={() => navigate("/profile")} // Navigate to profile page
+            className="block px-4 py-2 text-sm text-gray-700"
+          >
+            Profile
+          </button>
+
           <div className="block px-4 py-2 text-sm text-gray-700">
             Logged in as {user.name} ({user.email})
           </div>

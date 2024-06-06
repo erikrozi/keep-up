@@ -15,7 +15,7 @@ import {
     FormLabel,
 } from "../components/ui/form.tsx"
 
-function PersonalInfo() {
+function EditInfo() {
     const navigate = useNavigate();
     const { user, loading, error } = useSupabaseUser();
     const [errorMessage, setErrorMessage] = useState('');
@@ -80,7 +80,7 @@ function PersonalInfo() {
             if (error) {
                 throw error;
             }
-            navigate('/onboardingfive', { state: { data } });
+            navigate('/profile', { state: { data } });
         } catch (error) {
             console.error('Error logging interests:', error);
             setErrorMessage('Failed to log interests. Please try again.');
@@ -90,9 +90,6 @@ function PersonalInfo() {
     return (
         <div className="bg-gradient-to-r from-skyblue-500 via-white-500 to-royal-blue-500 flex justify-center items-center min-h-screen">
             <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6" style={{ width: '600px', minHeight: '500px' }}>
-                <Progress className="mb-4" value={progress} />
-                <h1 class="mb-4 text-4xl font-bold leading-none tracking-tight text-gray-900">Welcome.</h1>
-                <h2 class="mb-4 text-2xl font-normal text-gray-500">We'd like to get to know you a bit more.</h2>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
                         <h2 class="mb-2 text-lg font-normal text-gray-500">What is your professional level?</h2>
@@ -212,8 +209,8 @@ function PersonalInfo() {
                                 </FormItem>
                             )}
                         />
-                        <div className="flex justify-end">
-                            <Button type="submit">Next</Button>
+                        <div className="text-center">
+                          <Button type="submit">Save</Button>
                         </div>
                     </form>
                 </Form>
@@ -223,4 +220,4 @@ function PersonalInfo() {
     )
 }
 
-export default PersonalInfo;
+export default EditInfo;
