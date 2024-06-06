@@ -341,7 +341,7 @@ const onSubmit = async () => {
   const newInterests = interests.filter(interest => {
     const existingInterestIndex = existingInterestIds.findIndex(existingInterest =>
       existingInterest.topic_id === interest.topic_id &&
-      (!existingInterest.subtopic_id || existingInterest.subtopic_id === interest.subtopic_id)
+      (!interest.subtopic_id || existingInterest.subtopic_id === interest.subtopic_id)
     );
     return existingInterestIndex === -1;
   });
