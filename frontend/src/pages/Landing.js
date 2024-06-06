@@ -4,11 +4,11 @@ import "aos/dist/aos.css";
 import useAos from "../hooks/useAos";
 import { Button } from "../components/ui/button.tsx";
 import { useNavigate } from "react-router-dom";
+import logo from "../assets/LogoAndNameBig.png"; // Adjust the path as necessary
 import landingImage from "../assets/rabbit_hopping_flipped.gif";
 import landingRocket from "../assets/LandingRocket.png";
 import landingLightbulb from "../assets/LandingLightbulb.png";
 import landingTarget from "../assets/LandingTarget.png";
-import Features from "../components/ui/features.tsx";
 import Zigzag from "../components/ui/zigzag.tsx";
 import Testimonials from "../components/ui/testimonials.tsx";
 import PageIllustration from "../components/ui/page-illustration.tsx";
@@ -37,14 +37,14 @@ const LandingPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-royal-blue-700 via-skyblue-500 to-white flex flex-col justify-center items-center">
       {/* Navigation Menu */}
       <nav className="absolute top-0 left-0 w-full py-5 px-10 flex justify-between items-center">
-        <div className="logo text-white text-lg font-bold">KeepUp</div>
+        <div className="logo">
+          <img
+            src={logo}
+            alt="KeepUp Logo"
+            className="h-20 w-auto object-contain"
+          />
+        </div>
         <div className="menu">
-          {/* <a href="#aboutSection" className="text-white pr-5">
-            About
-          </a> */}
-          {/* <a href="#" className="text-white pr-5">
-            Login
-          </a> */}
           <Button
             className="text-white bg-transparent py-2 px-4 rounded hover:bg-transparent hover:text-blue-500"
             onClick={() => navigate("/login")}
@@ -159,14 +159,14 @@ const LandingPage = () => {
       <footer className="py-6 md:px-8 md:py-0">
         <div className="container flex flex-col items-center justify-between gap-4 md:h-24 md:flex-row">
           <p className="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
-            Built by Team 21. The source code is available on GitHub
+            Built by Team 21. The source code is available on GitHub.
             <a
-              // href={siteConfig.links.github}
+              href={"https://www.semanticscholar.org/product/api"}
               target="_blank"
               rel="noreferrer"
               className="font-medium underline underline-offset-4"
             >
-              {" "}
+              {" Powered by Semantic Scholar"}
             </a>
             .
           </p>
