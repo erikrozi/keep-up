@@ -81,7 +81,7 @@ function DeepdivePage() {
   };
 
   const handleSlideChange = (swiper) => {
-    if (swiper.activeIndex === swiper.slides.length - 2 && !isMoreLoading) {
+    if (swiper.activeIndex === swiper.slides.length - 2 && !isMoreLoading && recommendations.length > 0) {
       fetchMoreRecommendations();
     }
 
@@ -103,69 +103,57 @@ function DeepdivePage() {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
-        <div className="flex-grow">
-        <div className="flex-none">
-          <div className="flex flex-row justify-center items-center my-4 mx-2 md:mx-10">
-            <div className="flex justify-center items-center my-4 mx-2">
-              <button
-                onClick={() => navigate(-1)}
-                className="bg-white text-black font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg"
+        <div className="flex-grow flex flex-col items-center mx-2 md:mx-10">
+          <div className="w-full flex flex-col items-center my-4 bg-white rounded-lg shadow-lg py-4 px-6">
+            <h1 className="text-xl md:text-2xl font-bold text-black text-center">Similar papers to: {paperData.title}</h1>
+          </div>
+          <div className="w-full flex-grow">
+            {isRecommendationsLoading ? (
+              <div className="flex flex-col align-middle justify-center items-center rounded-lg p-6 h-screen overflow-auto">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-black"></div>
+                <p className="text-lg text-black">Loading recommendations...</p>
+              </div>
+            ) : (
+              <Swiper
+                direction={"vertical"}
+                slidesPerView={"auto"}
+                spaceBetween={50}
+                centeredSlides={true}
+                mousewheel={{
+                  enabled: true,
+                  forceToAxis: true,
+                  thresholdDelta: 10,
+                  thresholdTime: 10,
+                  invert: false,
+                }}
+                keyboard={{
+                  enabled: true,
+                  onlyInViewport: false,
+                }}
+                pagination={{
+                  dynamicBullets: true,
+                  clickable: true,
+                }}
+                modules={[Pagination, Keyboard, Mousewheel]}
+                autoHeight={true}
+                onSlideChange={handleSlideChange}
               >
-                Back
-              </button>
-            </div>
-            <div className="flex flex-col justify-center items-center my-4 mx-2">
-              <h1 className="text-2xl font-bold text-black text-center">Similar Papers to: {paperData.title}</h1>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-row justify-center items-center mx-2 md:mx-10">
-        {isRecommendationsLoading ? (
-          <div className="flex flex-col align-middle justify-center items-center rounded-lg p-6 h-screen overflow-auto">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-black"></div>
-            <p className="text-lg text-black">Loading recommendations...</p>
-          </div>
-        ) : (
-          <Swiper
-            direction={"vertical"}
-            slidesPerView={"auto"}
-            spaceBetween={50}
-            centeredSlides={true}
-            mousewheel={{
-              enabled: true,
-              forceToAxis: true,
-              thresholdDelta: 10,
-              thresholdTime: 10,
-              invert: false,
-            }}
-            keyboard={{
-              enabled: true,
-              onlyInViewport: false,
-            }}
-            pagination={{
-              dynamicBullets: true,
-              clickable: true,
-            }}
-            modules={[Pagination, Keyboard, Mousewheel]}
-            autoHeight={true}
-            onSlideChange={handleSlideChange}
-          >
-            {recommendations.map((paper_id) => (
-              <SwiperSlide key={paper_id} className="h-fit flex items-center">
-                <PaperContainer corpus_id={paper_id} user={user} />
-              </SwiperSlide>
-            ))}
-            {isMoreLoading && (
-              <SwiperSlide key="loading" className="h-fit flex justify-center items-center">
-                <div className="flex flex-col align-middle justify-center items-center bg-card border border-gray-200 shadow-lg rounded-lg p-6 h-[80vh] overflow-auto">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-black"></div>
-                  <p className="text-lg text-black">Loading recommendations...</p>
-                </div>
-              </SwiperSlide>
+                {recommendations.map((paper_id) => (
+                  <SwiperSlide key={paper_id} className="h-fit flex items-center">
+                    <PaperContainer corpus_id={paper_id} user={user} />
+                  </SwiperSlide>
+                ))}
+                {isMoreLoading && (
+                  <SwiperSlide key="loading" className="h-fit flex justify-center items-center">
+                    <div className="flex flex-col align-middle justify-center items-center bg-card border border-gray-200 shadow-lg rounded-lg p-6 h-[80vh] overflow-auto">
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-black"></div>
+                      <p className="text-lg text-black">Loading recommendations...</p>
+                    </div>
+                  </SwiperSlide>
+                )}
+              </Swiper>
             )}
-          </Swiper>
-        )}
-      </div>
+          </div>
         </div>
       </div>
     </div>

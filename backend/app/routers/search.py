@@ -41,7 +41,8 @@ async def read_search():
 @router.get("/{query}")
 async def search_papers(query: str, user: dict = Depends(verify_token)):
     # Query the paper_metadata table
-    search_embed = generate_specter_embedding(query)
+    generated_query = generate_summary_string(query)
+    search_embed = generate_specter_embedding(generated_query)
 
     exclude_ids = []
     user_id = user["sub"]
@@ -54,3 +55,22 @@ async def search_papers(query: str, user: dict = Depends(verify_token)):
 
     return recs
 
+def generate_summary_string(query):
+
+    llm = ChatOpenAI(model="gpt-3.5-turbo", max_tokens=300)
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", BACKGROUND_PROMPT),
+        ("user", "{input}")
+    ])
+    output_parser = StrOutputParser()
+    chain = prompt | llm | output_parser
+    
+    gpt_input = f"""
+    The user has  expressed interest in the following topic:\n\n
+    {query}\n\n
+    Generate a summary of the user's interests.
+    Include information on what kind of research papers the user would like to
+    read next.
+    """
+    
+    return chain.invoke(gpt_input)

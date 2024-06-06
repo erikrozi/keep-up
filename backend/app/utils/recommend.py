@@ -53,7 +53,7 @@ def filter_recommendations(pinecone_response, exclude_ids):
     # Concatenate the sorted buckets
     sorted_data = []
     for i in range(9, -1, -1):
-        bucket = [elem for elem in data if elem['score'] >= i / 10]
+        bucket = [elem for elem in data if elem['score'] >= i / 10 and elem['score'] < (i + 1) / 10]
         sorted_bucket = sorted(bucket, key=lambda x: x['citationcount'], reverse=True)
         sorted_data += sorted_bucket
 
