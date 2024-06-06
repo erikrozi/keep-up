@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
+import { useNavigate } from "react-router-dom";
 import { Badge } from "./badge.tsx";
 import { Button } from "./button.tsx";
 import { ThumbsUp, Bookmark } from "lucide-react";
@@ -25,6 +26,7 @@ const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
   const [relatedPapers, setRelatedPapers] = useState([]); // Add a new state variable to store the related papers
   const [isLoading, setIsLoading] = useState(true);
   const [abstractImage, setAbstractImage] = useState(null); // State to store the generated image URL
+  const navigate = useNavigate();
 
   const fetchPaperData = async () => {
     const response = await api.get("/papers/" + corpus_id);
@@ -131,10 +133,13 @@ const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
     const fetchData = async () => {
       setIsLoading(true);
       await fetchPaperData();
-      await fetchPaperSummary();
-      await fetchPaperResults();
-      await fetchRelatedPapers();
       setIsLoading(false);
+      // fetchPaperSummary and results concurrently
+      await Promise.all([
+        fetchPaperSummary(),
+        fetchPaperResults(),
+        fetchRelatedPapers(),
+      ]);
     };
 
     fetchData();
@@ -210,7 +215,6 @@ const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
 
     fetchLikeCount();
     checkIfLiked();
-    trackPaperView();
   }, [user, corpus_id]);
 
   const toggleLike = async () => {
@@ -264,16 +268,53 @@ const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
   }
 
   const getTitleFontSize = (title) => {
-    if (title.length > 125) return "text-xs md:text-xl";
-    if (title.length > 100) return "text-m md:text-2xl";
-    if (title.length > 75) return "text-l md:text-3xl";
-    return "text-xl md:text-4xl";
+    if (title.length > 125) return "text-xs md:text-xl xl:text-xl 2xl:text-2xl";
+    if (title.length > 100) return "text-m md:text-xl xl:text-2xl 2xl:text-3xl";
+    if (title.length > 75) return "text-l md:text-2xl xl:text-3xl 2xl:text-4xl";
+    return "text-xl md:text-3xl xl:text-3xl 2xl:text-4xl";
+  };
+
+  // Add a function that capitalizes titles properly, e.g. "the" -> "The".
+  // Don't capitalize words like "and" or "of" unless they are the first word.
+  const capitalizeTitle = (title) => {
+    const lowercaseWords = [
+      "a",
+      "an",
+      "the",
+      "and",
+      "but",
+      "or",
+      "for",
+      "nor",
+      "on",
+      "at",
+      "to",
+      "from",
+      "by",
+      "with",
+      "in",
+      "of",
+      "as",
+    ];
+    return title
+      .split(" ")
+      .map((word, index) => {
+        if (index === 0 || !lowercaseWords.includes(word)) {
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        }
+        return word;
+      })
+      .join(" ");
   };
 
   const getBodyFontSize = (text) => {
-    if (text.length > 500) return "text-xs md:text-sm lg:text-base";
-    if (text.length > 250) return "text-sm md:text-base";
-    return "text-base md:text-base lg:text-lg";
+    if (text.length > 800)
+      return "text-xs md:text-xs lg:text-sm xl:text-sm 2xl:text-base";
+    if (text.length > 400)
+      return "text-xs md:text-sm lg:text-sm xl:text-sm 2xl:text-base";
+    if (text.length > 200)
+      return "text-sm md:text-base xl:text-base 2xl:text-lg";
+    return "text-base md:text-base lg:text-base xl:text-base 2xl:text-xl";
   };
 
   return (
@@ -287,7 +328,7 @@ const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
             paperData.metadata.title
           )} font-bold mb-4`}
         >
-          {paperData.metadata.title}
+          {capitalizeTitle(paperData.metadata.title)}
         </h1>
         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 md:items-center">
           <Button
@@ -353,8 +394,8 @@ const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
       <div className="hidden md:block flex flex-wrap md:mb-4 space-x-2">
         {paperData.metadata.s2fieldsofstudy &&
           paperData.metadata.s2fieldsofstudy.length > 0 &&
-          paperData.metadata.s2fieldsofstudy.map((field) => (
-            <Badge variant="secondary" key={field.category}>
+          paperData.metadata.s2fieldsofstudy.map((field, index) => (
+            <Badge variant="secondary" key={`category_${index}`}>
               {field.category}
             </Badge>
           ))}
@@ -376,8 +417,8 @@ const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
             <div className="basis-1/3">
               <h2 className="text-lg sm:text-xl font-bold mb-4">Paper Venue</h2>
               <div className="flex flex-wrap mb-4">
-                <p className="mr-2 mb-2 bg-[#2B59C3] rounded-full py-2 px-4 text-xs sm:text-sm text-white font-bold items-center">
-                  {paperData.metadata.venue}
+                <p className="mr-2 mb-2 bg-[#2B59C3] rounded-3xl py-2 px-4 text-xs sm:text-sm text-white font-bold items-center">
+                  {paperData.metadata.venue ? paperData.metadata.venue : "N/A"}
                 </p>
               </div>
             </div>
@@ -388,10 +429,11 @@ const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
               <div className="flex flex-wrap mb-4">
                 {relatedPapers.map((paper) => (
                   <p
-                    key={paper.metadata.corpus_id}
-                    className="mr-2 mb-2 bg-gray-200 hover:bg-gray-300 rounded-full py-2 px-4 text-xs sm:text-sm font-bold"
+                    key={paper.id}
+                    onClick={() => window.open(paper.metadata.url, "_blank")}
+                    className="mr-2 mb-2 bg-gray-200 hover:bg-gray-300 rounded-3xl py-2 px-4 text-xs sm:text-sm font-bold"
                   >
-                    {paper.metadata.title}
+                    {capitalizeTitle(paper.metadata.title)}
                   </p>
                 ))}
               </div>
@@ -408,7 +450,7 @@ const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
               <img
                 src={abstractImage}
                 alt="Generated from Abstract"
-                className="rounded-lg max-w-full max-h-[50vh] object-contain"
+                className="rounded-lg max-w-full max-h-[45vh] object-contain"
               />
             ) : (
               <div
@@ -421,6 +463,15 @@ const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
                 </ReactMarkdown>
               </div>
             )}
+          </div>
+          <div className="flex">
+            <Button
+              variant="default"
+              size="default"
+              onClick={() => navigate(`/deepdive/${corpus_id}`)}
+            >
+              Find other similar papers!
+            </Button>
           </div>
         </div>
       </div>

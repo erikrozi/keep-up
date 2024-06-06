@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { PaperContainer } from "../components/ui/paper-container.tsx";
 import {
   NavigationMenu,
@@ -12,28 +12,39 @@ import "swiper/css/pagination";
 import "swiper/css/keyboard";
 import "swiper/css/mousewheel";
 import { supabase } from "../utils/supabase.ts";
-import useSupabaseUser from '../hooks/useSupabaseUser';
-import api from "../utils/api";
+import useSupabaseUser from '../hooks/useSupabaseUser.ts';
+import api from "../utils/api.js";
 
-function Dashboard() {
-  const location = useLocation();
+function SearchPage() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isRecommendationsLoading, setIsRecommendationsLoading] = useState(true);
   const [isMoreLoading, setIsMoreLoading] = useState(false);
-  const [showInstructions, setShowInstructions] = useState(false);
   const navigate = useNavigate();
   const { user, loading, error } = useSupabaseUser();
   const name = user?.user_metadata.full_name;
   const email = user?.email;
-  const [userRecommendations, setUserRecommendations] = useState([]);
+  const [recommendations, setRecommendations] = useState([]);
+  const [paperData, setPaperData] = useState({});
 
-  const fetchUserRecommendations = async () => {
+  function useQuery() {
+    return new URLSearchParams(useLocation().search);
+  }
+
+  let query = useQuery().get('q')
+
+  if (!query) {
+    navigate('/dashboard/');
+  }
+
+  const fetchRecommendations = async () => {
     setIsRecommendationsLoading(true);
     try {
-      const response = await api.get("/users/recommend");
-      setUserRecommendations(response.data);
+      // insert corpus id into url
+      const response = await api.get(`/search/${query}`);  // Adjust this endpoint as needed
+      setRecommendations(response.data);
     } catch (error) {
       console.error('Error fetching recommendations:', error);
+      return <p>Error fetching recommendations: {error.message}</p>;
     } finally {
       setIsRecommendationsLoading(false);
     }
@@ -42,8 +53,8 @@ function Dashboard() {
   const fetchMoreRecommendations = async () => {
     setIsMoreLoading(true);
     try {
-      const response = await api.get("/users/recommend");  // Adjust this endpoint as needed for pagination
-      setUserRecommendations(prev => [...prev, ...response.data]);
+      const response = await api.get(`/search/${query}`);  // Adjust this endpoint as needed for pagination
+      setRecommendations(prev => [...prev, ...response.data]);
     } catch (error) {
       console.error('Error fetching more recommendations:', error);
     } finally {
@@ -52,15 +63,8 @@ function Dashboard() {
   };
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    if (params.get('from') === 'register') {
-      setShowInstructions(true);
-    }
-  }, [location]);
-
-  useEffect(() => {
-    fetchUserRecommendations();
-  }, []);
+    fetchRecommendations();
+  }, [query]);
 
   const logout = async () => {
     setIsLoggingOut(true);
@@ -84,13 +88,13 @@ function Dashboard() {
   };
 
   const handleSlideChange = (swiper) => {
-    if (swiper.activeIndex === swiper.slides.length - 2 && !isMoreLoading && userRecommendations.length > 0) {
+    if (swiper.activeIndex === swiper.slides.length - 2 && !isMoreLoading && recommendations.length > 0) {
       fetchMoreRecommendations();
     }
 
     // If not is more loading or not last slide, mark the paper as viewed
-    if (!isMoreLoading && swiper.activeIndex < userRecommendations.length) {
-      markPaperAsViewed(userRecommendations[swiper.activeIndex]);
+    if (!isMoreLoading && swiper.activeIndex < recommendations.length) {
+      markPaperAsViewed(recommendations[swiper.activeIndex]);
     }
   };
 
@@ -99,27 +103,6 @@ function Dashboard() {
 
   return (
     <div className="bg-gradient-to-r from-skyblue-500 via-white-500 to-royal-blue-500 h-screen overflow-hidden">
-      {showInstructions && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded-lg p-6 shadow-lg max-w-md mx-auto">
-            <h2 className="text-2xl font-bold mb-4">Welcome to your feed!</h2>
-            <p className="mb-4 font-bold">Here's how you can use this page:</p>
-            <ul className="list-disc list-inside mb-4">
-              <li>Use arrow keys or scroll up and down to navigate through recommended papers.</li>
-              <li>Double-click on a paper or press the like button to like a paper (This helps us recommend you better papers!)</li>
-              <li>If you need more recommendations, simply swipe to the bottom to load more.</li>
-              <li>Use the search bar to get recommendations on a specific topic.</li>
-            </ul>
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-              onClick={() => setShowInstructions(false)}
-            >
-              Got it!
-            </button>
-          </div>
-        </div>
-      )}
-
       <div className="flex flex-col h-full">
         <div className="flex-none">
           <NavigationMenu user={{ name, email }} logout={logout}>
@@ -127,8 +110,11 @@ function Dashboard() {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
-        <div className="flex-grow">
-          <div className="flex flex-row justify-center items-center mx-2 my-2 md:mx-10 md:my-10">
+        <div className="flex-grow flex flex-col items-center mx-2 md:mx-10">
+          <div className="w-full flex flex-col items-center my-4 bg-white rounded-lg shadow-lg py-4 px-6">
+            <h1 className="text-xl md:text-2xl font-bold text-black text-center">Search Results for: {query}</h1>
+          </div>
+          <div className="w-full flex-grow">
             {isRecommendationsLoading ? (
               <div className="flex flex-col align-middle justify-center items-center rounded-lg p-6 h-screen overflow-auto">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-black"></div>
@@ -159,7 +145,7 @@ function Dashboard() {
                 autoHeight={true}
                 onSlideChange={handleSlideChange}
               >
-                {userRecommendations.map((paper_id) => (
+                {recommendations.map((paper_id) => (
                   <SwiperSlide key={paper_id} className="h-fit flex items-center">
                     <PaperContainer corpus_id={paper_id} user={user} />
                   </SwiperSlide>
@@ -181,4 +167,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default SearchPage;

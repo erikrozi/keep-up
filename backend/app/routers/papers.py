@@ -10,6 +10,7 @@ import json
 
 from ..dependencies import verify_token, SUPABASE_KEY, SUPABASE_URL
 from ..utils.summarize import create_abstract_summary, create_abstract_results
+from ..utils.recommend import recommend_from_id
 
 router = APIRouter(
     prefix="/papers",
@@ -93,19 +94,8 @@ def get_paper_embeddings(corpus_id: str):
 # NOTE: pinecone query may include the paper itself in the results
 @router.get("/{corpus_id}/related")
 def get_related_papers(corpus_id: str):
-    related = pinecone_index.query(id=corpus_id, top_k=3)
-    if not related:
-        raise HTTPException(status_code=404, detail="Related papers not found")
-    
-    result = []
-    for item in related['matches']:
-        if item['id'] == corpus_id:
-            continue
-
-        parsed_item = {}
-        parsed_item['corpus_id'] = item['id']
-        parsed_item['score'] = item['score']
-        result.append(parsed_item)
+    related = recommend_from_id(corpus_id, k=2, sample_size=5, exclude_ids=[corpus_id])
+    result = [{'corpus_id': item} for item in related]
 
     # get metadata for related papers
     metadata_response = supabase.table('paper_metadata').select(
