@@ -108,7 +108,7 @@ const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
 
   const fetchAbstractImage = async (fieldsOfStudy) => {
     console.log("Fetching image for fields of study:", fieldsOfStudy);
-    console.log("Pixabay API Key:", process.env.REACT_APP_PIXABAY_API_KEY);
+    // console.log("Pixabay API Key:", process.env.REACT_APP_PIXABAY_API_KEY);
     try {
       const response = await axios.get("https://pixabay.com/api/", {
         params: {
