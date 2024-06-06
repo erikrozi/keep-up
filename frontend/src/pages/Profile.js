@@ -113,44 +113,45 @@ function Profile() {
         }
     }
 
+
     useEffect(() => {
         const fetchUserData = async () => {
-            try {
-                const { data: authData, error: authError } = await supabase.auth.getUser();
-                if (authError) {
-                    setFetchError(authError.message);
-                    return;
-                }
+            const { data: authData, error: authError } = await supabase.auth.getUser();
+            if (authError) {
+                setFetchError(authError.message);
+                return;
+            }
 
-                const userId = authData.user?.id;
-                if (!userId) {
-                    throw new Error('Invalid user ID');
-                }
+            const userId = authData.user?.id;
+            if (!userId) {
+                throw new Error('Invalid user ID');
+            }
 
-                setUserInfo({
-                    id: userId,
-                    email: authData.user.email || 'Unknown' // Adjust based on your user metadata
-                });
+            setUserInfo({
+                id: userId,
+                email: authData.user.email || 'Unknown' // Adjust based on your user metadata
+            });
 
-                // Fetch user roles based on the primary key (user ID)
-                const { data: roleData, error: roleError } = await supabase
-                    .from('user_info')
-                    .select('isstudent, isresearcher, isprofessional, goal1, goal2, goal3')
-                    .eq('user_id', userId)
-                    .single();
+            // Fetch user roles based on the primary key (user ID)
+            const { data: roleData, error: roleError } = await supabase
+                .from('user_info')
+                .select('isstudent, isresearcher, isprofessional, goal1, goal2, goal3')
+                .eq('user_id', userId)
+                .single();
 
-                if (roleError) {
-                    setFetchError(roleError.message);
-                } else {
-                    setIsStudent(roleData.isstudent);
-                    setIsResearcher(roleData.isresearcher);
-                    setIsProfessional(roleData.isprofessional);
-                    setGoal1(roleData.goal1);
-                    setGoal2(roleData.goal2);
-                    setGoal3(roleData.goal3);
-                }
-            } catch (err) {
-                setFetchError(err.message);
+            if (error) {
+                console.error("Error fetching user roles and goals:", error);
+                setErrorMessage('Failed to fetch user roles and goals Please try again.');
+                return;
+            }
+
+            if (roleData) {
+                setIsStudent(roleData.isstudent);
+                setIsResearcher(roleData.isresearcher);
+                setIsProfessional(roleData.isprofessional);
+                setGoal1(roleData.goal1);
+                setGoal2(roleData.goal2);
+                setGoal3(roleData.goal3);
             }
         };
 
@@ -245,7 +246,7 @@ function Profile() {
     return (
         <div className="bg-gradient-to-r from-skyblue-500 via-white-500 to-royal-blue-500 flex justify-center items-center min-h-screen">
             <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6">
-                <h1 className="mb-4 text-4xl font-bold leading-none tracking-tight text-gray-900">{user?.user_metadata.full_name}'s Profile</h1>
+                <h1 className="mb-4 text-4xl font-bold leading-none tracking-tight text-gray-900">{user?.user_metadata.full_name}s Profile</h1>
 
                 <h2 className="mb-4 text-2xl leading-none tracking-tight text-gray-900">Your Roles:</h2>
                 {renderRoles()}
