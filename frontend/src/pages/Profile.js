@@ -27,9 +27,9 @@ function Profile() {
 
     useEffect(() => {
         if (user) {
-          getUserTopics(user.id);
-          getUserSubtopics(user.id);
-          getUserCustomTopics(user.id);
+            getUserTopics(user.id);
+            getUserSubtopics(user.id);
+            getUserCustomTopics(user.id);
         }
     }, [user]);
 
@@ -84,7 +84,7 @@ function Profile() {
             }));
 
             setSelectedSubtopics(selectedSubtopicsData);
-        } 
+        }
     }
 
     async function getUserCustomTopics(userId) {
@@ -245,7 +245,10 @@ function Profile() {
 
     return (
         <div className="bg-gradient-to-r from-skyblue-500 via-white-500 to-royal-blue-500 flex justify-center items-center min-h-screen">
-            <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6">
+            <div className="bg-card border border-gray-400 shadow-lg rounded-lg p-6" style={{ width: '600px', minHeight: '500px' }}>
+                <div className="text-right">
+                    <Button type="button" onClick={handleDashboard}>Return to Dashboard</Button>
+                </div>
                 <h1 className="mb-4 text-4xl font-bold leading-none tracking-tight text-gray-900">{user?.user_metadata.full_name}'s Profile</h1>
 
                 <h2 className="mb-4 text-2xl leading-none tracking-tight text-gray-900">Your Roles:</h2>
@@ -254,31 +257,28 @@ function Profile() {
                 <h2 className="mb-4 text-2xl leading-none tracking-tight text-gray-900">Your Goals:</h2>
                 {renderGoals()}
 
-                <div className="text-center"> 
+                <div>
                     <Button type="button" onClick={handleEditInfo}>Edit Roles and Goals</Button>
                 </div>
 
                 <h2 className="mb-4 text-2xl leading-none tracking-tight text-gray-900"></h2>
 
-                <h2 className="mb-4 text-2xl leading-none tracking-tight text-gray-900">Your Topics and Subtopics:</h2>
+                <h2 className="mb-4 text-2xl leading-none tracking-tight text-gray-900">Your Interests:</h2>
                 {renderTopicsWithSubtopics()}
-
-                <h2 className="mb-4 text-2xl leading-none tracking-tight text-gray-900">Your Custom Topics:</h2>
                 <div className="mb-4">
                     {customTopics.map(customTopic => (
-                        <span key={customTopic.topic_id} className="m-1 px-2 py-1 rounded-full border bg-gray-200 text-gray-800">
-                            {customTopic.topic_name}
-                        </span>
+                        <div key={customTopic.topic_id} className="mb-2">
+                            <span key={customTopic.topic_id} className="m-1 px-2 py-1 rounded-full border bg-gray-200 text-gray-800">
+                                {customTopic.topic_name}
+                            </span>
+                        </div>
                     ))}
                 </div>
 
-                <div className="text-center"> 
+                <div>
                     <Button type="button" onClick={handleEditInterests}>Edit Interests</Button>
-                </div> 
+                </div>
                 <h2 className="mb-4 text-2xl leading-none tracking-tight text-gray-900"></h2>
-                <div className="text-center"> 
-                    <Button type="button" onClick={handleDashboard}>Return to Dashboard</Button>
-                </div> 
             </div>
         </div>
     );

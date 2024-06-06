@@ -49,7 +49,7 @@ const NavigationMenu = React.forwardRef<
       <form onSubmit={handleSearchSubmit} className="flex-1 px-4 flex items-center">
         <input
           type="text"
-          placeholder="Search..."
+          placeholder="Search for a specific topic..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-1/5 px-3 py-2 rounded-l-md text-sm bg-gray-100 text-black placeholder-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-600"

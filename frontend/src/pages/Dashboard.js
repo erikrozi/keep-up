@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { PaperContainer } from "../components/ui/paper-container.tsx";
 import {
   NavigationMenu,
@@ -16,10 +16,11 @@ import useSupabaseUser from '../hooks/useSupabaseUser';
 import api from "../utils/api";
 
 function Dashboard() {
+  const location = useLocation();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isRecommendationsLoading, setIsRecommendationsLoading] = useState(true);
   const [isMoreLoading, setIsMoreLoading] = useState(false);
-  const [showInstructions, setShowInstructions] = useState(true);
+  const [showInstructions, setShowInstructions] = useState(false);
   const navigate = useNavigate();
   const { user, loading, error } = useSupabaseUser();
   const name = user?.user_metadata.full_name;
@@ -49,6 +50,13 @@ function Dashboard() {
       setIsMoreLoading(false);
     }
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('from') === 'register') {
+      setShowInstructions(true);
+    }
+  }, [location]);
 
   useEffect(() => {
     fetchUserRecommendations();
@@ -97,10 +105,10 @@ function Dashboard() {
             <h2 className="text-2xl font-bold mb-4">Welcome to your feed!</h2>
             <p className="mb-4 font-bold">Here's how you can use this page:</p>
             <ul className="list-disc list-inside mb-4">
-              <li>Scroll up or down to navigate through the recommended papers.</li>
-              <li>Use the keyboard arrow keys for navigation as well.</li>
-              <li>Double-click or press the like button to like a paper (This helps us recommend you better papers!)</li>
+              <li>Use arrow keys or scroll up and down to navigate through recommended papers.</li>
+              <li>Double-click on a paper or press the like button to like a paper (This helps us recommend you better papers!)</li>
               <li>If you need more recommendations, simply swipe to the bottom to load more.</li>
+              <li>Use the search bar to get recommendations on a specific topic.</li>
             </ul>
             <button
               className="bg-blue-500 text-white px-4 py-2 rounded"
@@ -120,53 +128,53 @@ function Dashboard() {
           </NavigationMenu>
         </div>
         <div className="flex-grow">
-        <div className="flex flex-row justify-center items-center mx-2 my-2 md:mx-10 md:my-10">
-        {isRecommendationsLoading ? (
-          <div className="flex flex-col align-middle justify-center items-center rounded-lg p-6 h-screen overflow-auto">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-black"></div>
-            <p className="text-lg text-black">Loading recommendations...</p>
-          </div>
-        ) : (
-          <Swiper
-            direction={"vertical"}
-            slidesPerView={"auto"}
-            spaceBetween={50}
-            centeredSlides={true}
-            mousewheel={{
-              enabled: true,
-              forceToAxis: true,
-              thresholdDelta: 10,
-              thresholdTime: 10,
-              invert: false,
-            }}
-            keyboard={{
-              enabled: true,
-              onlyInViewport: false,
-            }}
-            pagination={{
-              dynamicBullets: true,
-              clickable: true,
-            }}
-            modules={[Pagination, Keyboard, Mousewheel]}
-            autoHeight={true}
-            onSlideChange={handleSlideChange}
-          >
-            {userRecommendations.map((paper_id) => (
-              <SwiperSlide key={paper_id} className="h-fit flex items-center">
-                <PaperContainer corpus_id={paper_id} user={user} />
-              </SwiperSlide>
-            ))}
-            {isMoreLoading && (
-              <SwiperSlide key="loading" className="h-fit flex justify-center items-center">
-                <div className="flex flex-col align-middle justify-center items-center bg-card border border-gray-200 shadow-lg rounded-lg p-6 h-[80vh] overflow-auto">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-black"></div>
-                  <p className="text-lg text-black">Loading recommendations...</p>
-                </div>
-              </SwiperSlide>
+          <div className="flex flex-row justify-center items-center mx-2 my-2 md:mx-10 md:my-10">
+            {isRecommendationsLoading ? (
+              <div className="flex flex-col align-middle justify-center items-center rounded-lg p-6 h-screen overflow-auto">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-black"></div>
+                <p className="text-lg text-black">Loading recommendations...</p>
+              </div>
+            ) : (
+              <Swiper
+                direction={"vertical"}
+                slidesPerView={"auto"}
+                spaceBetween={50}
+                centeredSlides={true}
+                mousewheel={{
+                  enabled: true,
+                  forceToAxis: true,
+                  thresholdDelta: 10,
+                  thresholdTime: 10,
+                  invert: false,
+                }}
+                keyboard={{
+                  enabled: true,
+                  onlyInViewport: false,
+                }}
+                pagination={{
+                  dynamicBullets: true,
+                  clickable: true,
+                }}
+                modules={[Pagination, Keyboard, Mousewheel]}
+                autoHeight={true}
+                onSlideChange={handleSlideChange}
+              >
+                {userRecommendations.map((paper_id) => (
+                  <SwiperSlide key={paper_id} className="h-fit flex items-center">
+                    <PaperContainer corpus_id={paper_id} user={user} />
+                  </SwiperSlide>
+                ))}
+                {isMoreLoading && (
+                  <SwiperSlide key="loading" className="h-fit flex justify-center items-center">
+                    <div className="flex flex-col align-middle justify-center items-center bg-card border border-gray-200 shadow-lg rounded-lg p-6 h-[80vh] overflow-auto">
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-black"></div>
+                      <p className="text-lg text-black">Loading recommendations...</p>
+                    </div>
+                  </SwiperSlide>
+                )}
+              </Swiper>
             )}
-          </Swiper>
-        )}
-      </div>
+          </div>
         </div>
       </div>
     </div>
