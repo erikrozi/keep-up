@@ -230,6 +230,10 @@ function Profile() {
         navigate('/editinterests'); // Go to edit interests
     };
 
+    const handleDashboard = () => {
+        navigate('/dashboard'); // Go to edit interests
+    };
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -270,6 +274,10 @@ function Profile() {
 
                 <div className="text-center"> 
                     <Button type="button" onClick={handleEditInterests}>Edit Interests</Button>
+                </div> 
+                <h2 className="mb-4 text-2xl leading-none tracking-tight text-gray-900"></h2>
+                <div className="text-center"> 
+                    <Button type="button" onClick={handleDashboard}>Return to Dashboard</Button>
                 </div> 
             </div>
         </div>
