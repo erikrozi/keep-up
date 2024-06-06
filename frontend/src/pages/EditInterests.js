@@ -128,23 +128,7 @@ function EditInterests() {
       setCustomTopics(selectedCustomTopicsData);
     }
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  
 
   const handleSave = () => {
     navigate('/profile'); // Go to profile
@@ -216,13 +200,6 @@ function EditInterests() {
     setCustomTopics(newCustomTopics);
     setErrorMessage('');
   };
-
-
-
-
-
-
-
 
 
 
@@ -358,32 +335,6 @@ const onSubmit = async () => {
     navigate("/profile", { state: { selectedTopics, selectedSubtopics } });
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   return (

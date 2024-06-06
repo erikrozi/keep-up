@@ -131,22 +131,6 @@ function OnboardingFive() {
   }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   const handleBack = () => {
     navigate('/personalInfo'); // Adjust the path to your previous step
   };
@@ -217,14 +201,6 @@ function OnboardingFive() {
     setCustomTopics(newCustomTopics);
     setErrorMessage('');
   };
-
-
-
-
-
-
-
-
 
 
 const onSubmit = async () => {
@@ -359,32 +335,6 @@ const onSubmit = async () => {
     navigate("/dashboard", { state: { selectedTopics, selectedSubtopics } });
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
   return (
