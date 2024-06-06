@@ -139,9 +139,39 @@ def generate_summary_string(recent_paper_titles, user_interests):
     Generate a summary of the user's interests and recently liked papers.
     Include information on what kind of research papers the user would like to
     read next.
-    """
+
+    Example:
+    This user has recently liked the following papers:\n\n
     
-    return chain.invoke(gpt_input)
+    The user has also expressed interest in the following topics:\n\n
+    [Machine Learning, harmful algal blooms, mesoscale eddies, drones, sharks]\n\n
+    Generate a summary of the user's interests and recently liked papers.
+    Include information on what kind of research papers the user would like to
+    read next.
+
+    Output:
+    Topics:
+    1. Machine learning
+    2. Drones
+    3. Harmful algal blooms
+    4. Sharks
+    5. Mesoscale eddies
+    
+    Topics of interest:
+    1. The application of machine learning in environmental sciences or marine biology.
+    2. The intersection of machine learning and environmental sciences, such as using drones for monitoring harmful algal blooms or shark populations. 
+    3. Papers focusing on the impact of mesoscale eddies on marine ecosystems or utilizing machine learning algorithms for studying these phenomena.
+
+    Future papers:
+    1. "A Machine Learning Approach for Early Detection of Harmful Algal Blooms Using Drone Imagery"
+    2. "Population Dynamics of Sharks in Relation to Mesoscale Eddy Activity: A Machine Learning Analysis"
+    3. "Impacts of Mesoscale Eddies on Marine Biodiversity: Insights from Machine Learning Models"
+    4. "Integration of Drone Technology and Machine Learning for Monitoring and Conservation of Shark Populations"
+    5. "Predictive Modeling of Harmful Algal Blooms in Coastal Waters Using Machine Learning Algorithms"
+    """
+    output = chain.invoke(gpt_input)
+    print(output)
+    return output
 
 if __name__ == "__main__":
     main()

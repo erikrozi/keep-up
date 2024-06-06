@@ -2,6 +2,7 @@ from .user_embedding_gpt import get_user_embedding_gpt
 from dotenv import load_dotenv
 from pinecone import Pinecone
 from supabase import Client, create_client
+from langdetect import detect
 import os
 
 
@@ -41,8 +42,9 @@ def filter_recommendations(pinecone_response, exclude_ids):
     # Filter out papers with abstracts that are too short (under 100 characters) or with no abstract
     abstracts_data = abstracts_response.data
     abstracts_data = [elem for elem in abstracts_data if elem['abstract'] and len(elem['abstract']) > 100]
-    # Filter out papers with abstracts that aren't at least 50% ascii characters
-    abstracts_data = [elem for elem in abstracts_data if sum(c.isascii() for c in elem['abstract']) / len(elem['abstract']) > 0.5]
+    
+    # Filter out papers with abstracts that aren't in English
+    abstracts_data = [elem for elem in abstracts_data if detect(elem['abstract']) == 'en']
 
     # remove data not in abstracts_data
     data = [elem for elem in data if elem['corpus_id'] in [elem['corpus_id'] for elem in abstracts_data]]
