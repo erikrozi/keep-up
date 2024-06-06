@@ -152,10 +152,10 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
   }
 
   const getTitleFontSize = (title) => {
-    if (title.length > 125) return "text-xs md:text-xl";
-    if (title.length > 100) return "text-m md:text-2xl";
-    if (title.length > 75) return "text-l md:text-3xl";
-    return "text-xl md:text-4xl";
+    if (title.length > 125) return "text-xs md:text-xl xl:text-xl 2xl:text-2xl";
+    if (title.length > 100) return "text-m md:text-xl xl:text-2xl 2xl:text-3xl";
+    if (title.length > 75) return "text-l md:text-2xl xl:text-3xl 2xl:text-4xl";
+    return "text-xl md:text-3xl xl:text-3xl 2xl:text-4xl";
   };
 
   // Add a function that capitalizes titles properly, e.g. "the" -> "The".
@@ -171,9 +171,10 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
   }
 
   const getBodyFontSize = (text) => {
-    if (text.length > 500) return "text-xs md:text-sm lg:text-base";
-    if (text.length > 250) return "text-sm md:text-base";
-    return "text-base md:text-base lg:text-lg";
+    if (text.length > 800) return "text-xs md:text-xs lg:text-sm xl:text-sm 2xl:text-base";
+    if (text.length > 400) return "text-xs md:text-sm lg:text-sm xl:text-sm 2xl:text-base";
+    if (text.length > 200) return "text-sm md:text-base xl:text-base 2xl:text-lg";
+    return "text-base md:text-base lg:text-base xl:text-base 2xl:text-xl";
   }
 
   return (
