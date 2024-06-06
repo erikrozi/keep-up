@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useSupabaseUser from '../hooks/useSupabaseUser';
 import { supabase } from '../../src/utils/supabase.ts';
 import { Button } from "../components/ui/button.tsx";
 
 function Profile() {
+    const navigate = useNavigate();
+
     const { user, loading, error } = useSupabaseUser();
     const [userInfo, setUserInfo] = useState({ id: '', email: '' });
     const [fetchError, setFetchError] = useState(null);
@@ -219,6 +222,10 @@ function Profile() {
         );
     };
 
+    const handleEditInterests = () => {
+        navigate('/editinterests'); // Go to profile
+    };
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -258,7 +265,7 @@ function Profile() {
                 </div>
 
                 <div className="text-center"> 
-                    <Button type="button" onClick={() => alert("hello")} className="mt-4">Edit Interests</Button> 
+                    <Button type="button" onClick={handleEditInterests}>Edit Interests</Button>
                 </div> 
             </div>
         </div>
