@@ -245,8 +245,7 @@ function Profile() {
     return (
         <div className="bg-gradient-to-r from-skyblue-500 via-white-500 to-royal-blue-500 flex justify-center items-center min-h-screen">
             <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6">
-                <h1 className="mb-4 text-4xl font-bold leading-none tracking-tight text-gray-900">Welcome!</h1>
-                <h2 className="mb-4 text-2xl font-semibold leading-none tracking-tight text-gray-900">Email: {userInfo.email}</h2>
+                <h1 className="mb-4 text-4xl font-bold leading-none tracking-tight text-gray-900">{user?.user_metadata.full_name}'s Profile</h1>
 
                 <h2 className="mb-4 text-2xl leading-none tracking-tight text-gray-900">Your Roles:</h2>
                 {renderRoles()}
