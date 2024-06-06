@@ -12,6 +12,8 @@ import Profile from "./pages/Profile";
 import EditInterests from "./pages/EditInterests";
 import EditInfo from "./pages/EditInfo"
 import ProtectedRoute from "./components/ProtectedRoute";
+import DeepdivePage from "./pages/DeepdivePage";
+import SearchPage from "./pages/SearchPage";
 import RedirectIfAuthenticated from "./components/RedirectIfAuthenticated";
 
 function App() {
@@ -28,6 +30,8 @@ function App() {
           <Route exact path="/profile/" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route exact path="/editinterests/" element={<ProtectedRoute><EditInterests /></ProtectedRoute>} />
           <Route exact path="/editinfo/" element={<ProtectedRoute><EditInfo /></ProtectedRoute>} />
+          <Route path="/deepdive/:corpus_id" element={<ProtectedRoute><DeepdivePage /></ProtectedRoute>} />
+          <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
         </Routes>
       </Router>
     </div>

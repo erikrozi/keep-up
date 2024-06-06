@@ -14,7 +14,7 @@ const RedirectIfAuthenticated = ({ children }) => {
 
   if (loading) return <p>Loading...</p>;
 
-  return children;
+  return user ? null: children;
 };
 
 export default RedirectIfAuthenticated;
