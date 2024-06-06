@@ -102,7 +102,7 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
 
       const { error } = await supabase
         .from('seen_papers')
-        .insert([
+        .upsert([
           { user_id: user.id, corpus_id: corpus_id }
         ]);
 
@@ -250,8 +250,8 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
 
       <div className="hidden md:block flex flex-wrap md:mb-4 space-x-2">
         {paperData.metadata.s2fieldsofstudy && paperData.metadata.s2fieldsofstudy.length > 0 && (
-          paperData.metadata.s2fieldsofstudy.map((field) => (
-            <Badge variant="secondary" key={field.category}>{field.category}</Badge>
+          paperData.metadata.s2fieldsofstudy.map((field, index) => (
+            <Badge variant="secondary" key={`category_${index}`}>{field.category}</Badge>
           ))
         )}
       </div>
