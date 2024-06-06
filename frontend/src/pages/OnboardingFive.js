@@ -394,7 +394,8 @@ const onSubmit = async () => {
                   value={customTopicInput}
                   onChange={handleCustomTopicChange}
                   className="w-full p-2 border border-gray-300 rounded"
-                  placeholder="Enter custom topic"
+                  placeholder="Type a custom topic"
+                  onKeyPress={(e:React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => { e.key === 'Enter' && e.preventDefault(); }}
                 />
                 <Button type="button" onClick={addCustomTopic} className="ml-2">Add</Button>
               </div>
