@@ -3,13 +3,11 @@ import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu";
 import { useNavigate } from 'react-router-dom';
 import { cva } from "class-variance-authority";
 import { ChevronDown } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { cn } from "../../utils";
 import logo from "../../assets/LogoAndNameBig.png"; // Import your logo image here
 import profileImage from "../../assets/UserProfile.png"; // Your profile image here
-
-import { Link } from "react-router-dom"; 
 
 const NavigationMenu = React.forwardRef<
   React.ElementRef<typeof NavigationMenuPrimitive.Root>,
