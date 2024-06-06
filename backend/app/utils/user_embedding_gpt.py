@@ -37,6 +37,8 @@ def main():
 def get_user_embedding_gpt(user_id):
     recent_paper_titles = get_recently_liked_papers(user_id)
     interests = get_user_interests(user_id)
+    if not interests:
+        interests = ["Technology", "Innovation", "Multidisciplinary Research"]
     summary_string = generate_summary_string(recent_paper_titles, interests)
     return generate_specter_embedding(summary_string)
 
@@ -162,7 +164,7 @@ def generate_summary_string(recent_paper_titles, user_interests):
     2. The intersection of machine learning and environmental sciences, such as using drones for monitoring harmful algal blooms or shark populations. 
     3. Papers focusing on the impact of mesoscale eddies on marine ecosystems or utilizing machine learning algorithms for studying these phenomena.
 
-    Future papers:
+    Interesting papers:
     1. "A Machine Learning Approach for Early Detection of Harmful Algal Blooms Using Drone Imagery"
     2. "Population Dynamics of Sharks in Relation to Mesoscale Eddy Activity: A Machine Learning Analysis"
     3. "Impacts of Mesoscale Eddies on Marine Biodiversity: Insights from Machine Learning Models"

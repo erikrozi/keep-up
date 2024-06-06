@@ -66,11 +66,34 @@ def generate_summary_string(query):
     chain = prompt | llm | output_parser
     
     gpt_input = f"""
-    The user has  expressed interest in the following topic:\n\n
+    The user has expressed interest in the following topic:\n\n
     {query}\n\n
     Generate a summary of the user's interests.
     Include information on what kind of research papers the user would like to
     read next.
-    """
+
+    Example:
+    The user has expressed interest in the following topic:\n\n
+    Shark Drone Research\n\n
+    Generate a summary of the user's interests.
+    Include information on what kind of research papers the user would like to
+    read next.
+
+    Output:
+    Query: "Shark Drone Research"
     
-    return chain.invoke(gpt_input)
+    Topics of interest:
+    1. Marine Biology
+    2. Drone Technology
+    3. Shark Behavior
+
+    Interesting papers:
+    1. "Shark Behavior in the Presence of Drones"
+    2. "Drone Technology for Marine Biology Research"
+    3. "Drone Technology to Study Shark Behavior"
+    """
+
+    output = chain.invoke(gpt_input)
+    print(output)
+    
+    return output
