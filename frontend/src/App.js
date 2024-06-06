@@ -9,7 +9,8 @@ import LandingPage from "./pages/Landing";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import Profile from "./pages/Profile";
-import EditInterests from "./pages/EditInterests"
+import EditInterests from "./pages/EditInterests";
+import EditInfo from "./pages/EditInfo"
 import ProtectedRoute from "./components/ProtectedRoute";
 import RedirectIfAuthenticated from "./components/RedirectIfAuthenticated";
 
@@ -26,6 +27,7 @@ function App() {
           <Route exact path="/personalInfo/" element={<ProtectedRoute><PersonalInfo /></ProtectedRoute>} />
           <Route exact path="/profile/" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route exact path="/editinterests/" element={<ProtectedRoute><EditInterests /></ProtectedRoute>} />
+          <Route exact path="/editinfo/" element={<ProtectedRoute><EditInfo /></ProtectedRoute>} />
         </Routes>
       </Router>
     </div>

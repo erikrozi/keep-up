@@ -192,7 +192,7 @@ function Profile() {
         const roles = [];
         if (isStudent) roles.push('Student');
         if (isResearcher) roles.push('Researcher');
-        if (isProfessional) roles.push('Professional');
+        if (isProfessional) roles.push('Industry Professional');
 
         return (
             <div className="flex flex-wrap mb-4">
@@ -222,8 +222,12 @@ function Profile() {
         );
     };
 
+    const handleEditInfo = () => {
+        navigate('/editinfo'); // Go to edit info
+    };
+
     const handleEditInterests = () => {
-        navigate('/editinterests'); // Go to profile
+        navigate('/editinterests'); // Go to edit interests
     };
 
     if (loading) {
@@ -247,7 +251,7 @@ function Profile() {
                 {renderGoals()}
 
                 <div className="text-center"> 
-                    <Button type="button" onClick={() => alert("hello")} className="mt-4">Edit Roles and Goals</Button> 
+                    <Button type="button" onClick={handleEditInfo}>Edit Roles and Goals</Button>
                 </div>
 
                 <h2 className="mb-4 text-2xl leading-none tracking-tight text-gray-900"></h2>
