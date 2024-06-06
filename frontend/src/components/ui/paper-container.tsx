@@ -433,9 +433,20 @@ const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
                     onClick={() => window.open(paper.metadata.url, "_blank")}
                     className="mr-2 mb-2 bg-gray-200 hover:bg-gray-300 rounded-3xl py-2 px-4 text-xs sm:text-sm font-bold"
                   >
-                    {capitalizeTitle(paper.metadata.title)}
+                    {paper.metadata.title.length > 100
+                      ? capitalizeTitle(paper.metadata.title.substring(0, 100)) + "..."
+                      : capitalizeTitle(paper.metadata.title)}
                   </p>
                 ))}
+              </div>
+              <div className="flex">
+                <Button
+                  variant="purple"
+                  size="default"
+                  onClick={() => navigate(`/deepdive/${corpus_id}`)}
+                >
+                  Find other similar papers!
+                </Button>
               </div>
             </div>
           </div>
@@ -463,15 +474,6 @@ const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
                 </ReactMarkdown>
               </div>
             )}
-          </div>
-          <div className="flex">
-            <Button
-              variant="default"
-              size="default"
-              onClick={() => navigate(`/deepdive/${corpus_id}`)}
-            >
-              Find other similar papers!
-            </Button>
           </div>
         </div>
       </div>
