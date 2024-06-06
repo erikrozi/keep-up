@@ -22,6 +22,7 @@
     "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "compromise": "^14.13.0",
     "embla-carousel-react": "^8.0.4",
     "embla-carousel-wheel-gestures": "^8.0.0-rc05",
     "link": "^2.1.1",

@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import { Badge } from "./badge.tsx";
 import { Button } from "./button.tsx";
 import { ThumbsUp, Bookmark } from "lucide-react";
-import { supabase } from '../../utils/supabase.ts';
+import { supabase } from "../../utils/supabase.ts";
 import {
   Dialog,
   DialogContent,
@@ -12,34 +12,120 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./dialog";
-import api from '../../utils/api.js';
+import api from "../../utils/api.js";
+import axios from "axios";
 
-const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, user }) => {
+const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
+  corpus_id,
+  user,
+}) => {
   const [paperData, setPaperData] = useState(null);
-  const [paperSummary, setPaperSummary] = useState(''); // Add a new state variable to store the paper summary
-  const [paperResults, setPaperResults] = useState(''); // Add a new state variable to store the paper results
+  const [paperSummary, setPaperSummary] = useState(""); // Add a new state variable to store the paper summary
+  const [paperResults, setPaperResults] = useState(""); // Add a new state variable to store the paper results
   const [relatedPapers, setRelatedPapers] = useState([]); // Add a new state variable to store the related papers
   const [isLoading, setIsLoading] = useState(true);
+  const [abstractImage, setAbstractImage] = useState(null); // State to store the generated image URL
 
   const fetchPaperData = async () => {
-    const response = await api.get('/papers/' + corpus_id);
+    const response = await api.get("/papers/" + corpus_id);
     setPaperData(response.data);
-  }
+  };
 
   const fetchPaperSummary = async () => {
-    const response = await api.get('/papers/' + corpus_id + '/summary');
+    const response = await api.get("/papers/" + corpus_id + "/summary");
     setPaperSummary(response.data.summary);
-  }
+  };
 
   const fetchPaperResults = async () => {
-    const response = await api.get('/papers/' + corpus_id + '/results');
+    const response = await api.get("/papers/" + corpus_id + "/results");
     setPaperResults(response.data.results);
-  }
+  };
 
   const fetchRelatedPapers = async () => {
-    const response = await api.get('/papers/' + corpus_id + '/related');
+    const response = await api.get("/papers/" + corpus_id + "/related");
     setRelatedPapers(response.data);
-  }
+  };
+
+  // const fetchAbstractImage = async (abstract) => {
+  //   console.log("Are you even trying to play fetch?");
+  //   try {
+  //     const response = await axios.post(
+  //       "https://api.openai.com/v1/images/generations",
+  //       {
+  //         prompt: `Generate a cartoon image that represents the central themes of the research based on the abstract included. DO NOT draw letters, language, text, or ANY words on the image itself--only present an artistic representation. Abstract:${abstract.substring(
+  //           0,
+  //           100
+  //         )}.`,
+  //         //prompt: "Generate an image of a dog",
+  //         model: "dall-e-3",
+  //         size: "1024x1024",
+  //         quality: "standard",
+  //         n: 1,
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+  //     console.error("Success fetching abstract image");
+  //     console.log("API Response:", response.data); // Debugging log
+  //     setAbstractImage(response.data.data[0].url);
+  //   } catch (error) {
+  //     console.log("API Key:", process.env.REACT_APP_OPENAI_API_KEY); // Debugging log
+  //     console.error("Error fetching abstract image:", error);
+  //   }
+  // };
+
+  // const fetchAbstractImage = async (abstract) => {
+  //   console.log(
+  //     "Unsplash Access Key:",
+  //     process.env.REACT_APP_UNSPLASH_ACCESS_KEY
+  //   );
+  //   console.log("Fetching image for abstract");
+  //   try {
+  //     const response = await axios.get(
+  //       "https://api.unsplash.com/search/photos",
+  //       {
+  //         params: { query: abstract, per_page: 1 },
+  //         headers: {
+  //           Authorization: `Client-ID ${process.env.REACT_APP_UNSPLASH_ACCESS_KEY}`,
+  //         },
+  //       }
+  //     );
+  //     if (response.data.results && response.data.results.length > 0) {
+  //       setAbstractImage(response.data.results[0].urls.small);
+  //     } else {
+  //       console.error("No images found");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching abstract image:", error);
+  //   }
+  // };
+
+  const fetchAbstractImage = async (fieldsOfStudy) => {
+    console.log("Fetching image for fields of study:", fieldsOfStudy);
+    console.log("Pixabay API Key:", process.env.REACT_APP_PIXABAY_API_KEY);
+    try {
+      const response = await axios.get("https://pixabay.com/api/", {
+        params: {
+          key: process.env.REACT_APP_PIXABAY_API_KEY,
+          q: fieldsOfStudy.join(", "),
+        },
+      });
+      if (response.data.hits && response.data.hits.length > 0) {
+        const randomIndex = Math.floor(
+          Math.random() * response.data.hits.length
+        );
+        setAbstractImage(response.data.hits[randomIndex].webformatURL);
+      } else {
+        console.error("No images found");
+      }
+    } catch (error) {
+      console.error("Error fetching abstract image:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,11 +140,25 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
     fetchData();
   }, [corpus_id]);
 
+  useEffect(() => {
+    if (paperData && paperData.metadata && paperData.metadata.s2fieldsofstudy) {
+      const fieldsOfStudy = paperData.metadata.s2fieldsofstudy.map(
+        (field) => field.category
+      );
+      if (fieldsOfStudy.length > 0) {
+        console.error(
+          "currently fetching abstract image based on fields of study"
+        );
+        fetchAbstractImage(fieldsOfStudy);
+      }
+    }
+  }, [paperData]);
+
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const lastTapRef = useRef(0);
 
-  const userId = user.id; // Get the user ID from Supabase authentication  
+  const userId = user.id; // Get the user ID from Supabase authentication
 
   useEffect(() => {
     const fetchLikeCount = async () => {
@@ -67,12 +167,12 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
       }
 
       const { count, error } = await supabase
-        .from('liked_papers')
-        .select('*', { count: 'exact' })
-        .eq('corpus_id', corpus_id);
+        .from("liked_papers")
+        .select("*", { count: "exact" })
+        .eq("corpus_id", corpus_id);
 
       if (error) {
-        console.error('Error fetching like count:', error);
+        console.error("Error fetching like count:", error);
       } else {
         setLikeCount(count);
       }
@@ -82,13 +182,13 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
       if (!user || !corpus_id) return;
 
       const { data, error } = await supabase
-        .from('liked_papers')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('corpus_id', corpus_id);
+        .from("liked_papers")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("corpus_id", corpus_id);
 
       if (error) {
-        console.error('Error checking if paper is liked:', error);
+        console.error("Error checking if paper is liked:", error);
       } else {
         setIsLiked(data.length > 0);
       }
@@ -100,13 +200,11 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
       }
 
       const { error } = await supabase
-        .from('seen_papers')
-        .insert([
-          { user_id: user.id, corpus_id: corpus_id }
-        ]);
+        .from("seen_papers")
+        .insert([{ user_id: user.id, corpus_id: corpus_id }]);
 
       if (error) {
-        console.error('Error tracking paper view:', error);
+        console.error("Error tracking paper view:", error);
       }
     };
 
@@ -119,32 +217,30 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
     if (isLiked) {
       // Unlike the paper (delete the row)
       const { error } = await supabase
-        .from('liked_papers')
+        .from("liked_papers")
         .delete()
-        .eq('user_id', userId)
-        .eq('corpus_id', corpus_id);
+        .eq("user_id", userId)
+        .eq("corpus_id", corpus_id);
 
       if (error) {
-        console.error('Error unliking the paper:', error);
+        console.error("Error unliking the paper:", error);
       } else {
         setIsLiked(false);
         setLikeCount(likeCount - 1);
-        console.log('Paper unliked successfully');
+        console.log("Paper unliked successfully");
       }
     } else {
       // Like the paper (insert a row)
       const { error } = await supabase
-        .from('liked_papers')
-        .insert([
-          { user_id: userId, corpus_id: corpus_id }
-        ]);
+        .from("liked_papers")
+        .insert([{ user_id: userId, corpus_id: corpus_id }]);
 
       if (error) {
-        console.error('Error liking the paper:', error);
+        console.error("Error liking the paper:", error);
       } else {
         setIsLiked(true);
         setLikeCount(likeCount + 1);
-        console.log('Paper liked successfully');
+        console.log("Paper liked successfully");
       }
     }
   };
@@ -178,26 +274,46 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
     if (text.length > 500) return "text-xs md:text-sm lg:text-base";
     if (text.length > 250) return "text-sm md:text-base";
     return "text-base md:text-base lg:text-lg";
-  }
+  };
 
   return (
-    <div className="bg-card border border-gray-200 shadow-lg rounded-lg p-6 h-[80vh] overflow-auto flex flex-col" onClick={handleDoubleTap}>
+    <div
+      className="bg-card border border-gray-200 shadow-lg rounded-lg p-6 h-[80vh] overflow-auto flex flex-col"
+      onClick={handleDoubleTap}
+    >
       <div className="flex justify-between items-center space-x-1">
-        <h1 className={`${getTitleFontSize(paperData.metadata.title)} font-bold mb-4`}>
+        <h1
+          className={`${getTitleFontSize(
+            paperData.metadata.title
+          )} font-bold mb-4`}
+        >
           {paperData.metadata.title}
         </h1>
         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 md:items-center">
-          <Button variant="outline" size="icon" onClick={toggleLike} style={isLiked ? { color: "#3a88fe" } : { color: "#000" }}>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleLike}
+            style={isLiked ? { color: "#3a88fe" } : { color: "#000" }}
+          >
             <ThumbsUp className={`h-5 w-5`} />
             <p>{likeCount}</p>
           </Button>
           <div className="hidden md:block">
             <Dialog>
-              <DialogTrigger><Button variant="outline" size="default">View Abstract</Button></DialogTrigger>
+              <DialogTrigger>
+                <Button variant="outline" size="default">
+                  View Abstract
+                </Button>
+              </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle className="text-lg sm:text-xl font-bold mb-4">Abstract</DialogTitle>
-                  <DialogDescription className="text-sm sm:text-base text-black">{paperData.abstract}</DialogDescription>
+                  <DialogTitle className="text-lg sm:text-xl font-bold mb-4">
+                    Abstract
+                  </DialogTitle>
+                  <DialogDescription className="text-sm sm:text-base text-black">
+                    {paperData.abstract}
+                  </DialogDescription>
                 </DialogHeader>
               </DialogContent>
             </Dialog>
@@ -205,12 +321,7 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
           <Button
             variant="purple"
             size="default"
-            onClick={() =>
-              window.open(
-                paperData.metadata.url,
-                "_blank"
-              )
-            }
+            onClick={() => window.open(paperData.metadata.url, "_blank")}
           >
             Full Text
           </Button>
@@ -218,16 +329,20 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
       </div>
 
       <div className="flex flex-wrap my-1 md:mb-4 space-x-2 text-gray-500 text-xs">
-        {paperData.metadata.authors && paperData.metadata.authors.length > 0 && (
-          <>
-            {paperData.metadata.authors.slice(0, 3).map((author, index) => (
-              <p key={author.name}>
-                {author.name}{index < 2 && index < paperData.metadata.authors.length - 1 ? ', ' : ''}
-              </p>
-            ))}
-            {paperData.metadata.authors.length > 3 && <p>...</p>}
-          </>
-        )}
+        {paperData.metadata.authors &&
+          paperData.metadata.authors.length > 0 && (
+            <>
+              {paperData.metadata.authors.slice(0, 3).map((author, index) => (
+                <p key={author.name}>
+                  {author.name}
+                  {index < 2 && index < paperData.metadata.authors.length - 1
+                    ? ", "
+                    : ""}
+                </p>
+              ))}
+              {paperData.metadata.authors.length > 3 && <p>...</p>}
+            </>
+          )}
 
         <p>•</p>
         <p>Published in {paperData.metadata.year}</p>
@@ -236,19 +351,25 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
       </div>
 
       <div className="hidden md:block flex flex-wrap md:mb-4 space-x-2">
-        {paperData.metadata.s2fieldsofstudy && paperData.metadata.s2fieldsofstudy.length > 0 && (
+        {paperData.metadata.s2fieldsofstudy &&
+          paperData.metadata.s2fieldsofstudy.length > 0 &&
           paperData.metadata.s2fieldsofstudy.map((field) => (
-            <Badge variant="secondary" key={field.category}>{field.category}</Badge>
-          ))
-        )}
+            <Badge variant="secondary" key={field.category}>
+              {field.category}
+            </Badge>
+          ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 md:gap-8 rounded-lg py-2 md:p-4 mb-4">
         <div>
           <h2 className="text-lg sm:text-xl font-bold mb-4">Summary</h2>
-          <div className={`bg-muted p-4 mb-4 rounded-lg ${getBodyFontSize(paperSummary)}`}>
+          <div
+            className={`bg-muted p-4 mb-4 rounded-lg ${getBodyFontSize(
+              paperSummary
+            )}`}
+          >
             <ReactMarkdown>
-              {paperSummary ? paperSummary : 'Generating Summary...'}
+              {paperSummary ? paperSummary : "Generating Summary..."}
             </ReactMarkdown>
           </div>
           <div className="flex flex-col md:flex-row gap-2 md:gap-8">
@@ -261,10 +382,15 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
               </div>
             </div>
             <div className="hidden sm:block basis-2/3">
-              <h2 className="text-lg sm:text-xl font-bold mb-4">Related Papers</h2>
+              <h2 className="text-lg sm:text-xl font-bold mb-4">
+                Related Papers
+              </h2>
               <div className="flex flex-wrap mb-4">
                 {relatedPapers.map((paper) => (
-                  <p key={paper.metadata.corpus_id} className="mr-2 mb-2 bg-gray-200 hover:bg-gray-300 rounded-full py-2 px-4 text-xs sm:text-sm font-bold">
+                  <p
+                    key={paper.metadata.corpus_id}
+                    className="mr-2 mb-2 bg-gray-200 hover:bg-gray-300 rounded-full py-2 px-4 text-xs sm:text-sm font-bold"
+                  >
                     {paper.metadata.title}
                   </p>
                 ))}
@@ -272,12 +398,29 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
             </div>
           </div>
         </div>
+
         <div className="hidden lg:block">
-          <h2 className="text-lg sm:text-xl font-bold mb-4">Results</h2>
-          <div className={`bg-muted p-4 mb-4 rounded-lg ${getBodyFontSize(paperResults)}`}>
-            <ReactMarkdown>
-              {paperResults ? paperResults : 'Generating Results...'}
-            </ReactMarkdown>
+          <h2 className="text-lg sm:text-xl font-bold mb-4">
+            {abstractImage ? "" : "Key Results"}
+          </h2>
+          <div className="p-4 mb-4 rounded-lg flex justify-center">
+            {abstractImage ? (
+              <img
+                src={abstractImage}
+                alt="Generated from Abstract"
+                className="rounded-lg max-w-full max-h-[50vh] object-contain"
+              />
+            ) : (
+              <div
+                className={`bg-muted p-4 mb-4 rounded-lg ${getBodyFontSize(
+                  paperResults
+                )}`}
+              >
+                <ReactMarkdown>
+                  {paperResults ? paperResults : "Generating Results..."}
+                </ReactMarkdown>
+              </div>
+            )}
           </div>
         </div>
       </div>
