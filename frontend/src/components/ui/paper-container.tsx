@@ -95,25 +95,8 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
       }
     };
 
-    const trackPaperView = async () => {
-      if (!user || !corpus_id) {
-        return;
-      }
-
-      const { error } = await supabase
-        .from('seen_papers')
-        .insert([
-          { user_id: user.id, corpus_id: corpus_id }
-        ]);
-
-      if (error) {
-        console.error('Error tracking paper view:', error);
-      }
-    };
-
     fetchLikeCount();
     checkIfLiked();
-    trackPaperView();
   }, [user, corpus_id]);
 
   const toggleLike = async () => {
@@ -250,8 +233,8 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
 
       <div className="hidden md:block flex flex-wrap md:mb-4 space-x-2">
         {paperData.metadata.s2fieldsofstudy && paperData.metadata.s2fieldsofstudy.length > 0 && (
-          paperData.metadata.s2fieldsofstudy.map((field) => (
-            <Badge variant="secondary" key={field.category}>{field.category}</Badge>
+          paperData.metadata.s2fieldsofstudy.map((field, index) => (
+            <Badge variant="secondary" key={`category_${index}`}>{field.category}</Badge>
           ))
         )}
       </div>
@@ -298,7 +281,7 @@ const PaperContainer: React.FC<{ corpus_id: any, user: any }> = ({ corpus_id, us
               size="default"
               onClick={() => navigate(`/deepdive/${corpus_id}`)}
             >
-              Deep dive into other similar papers!
+              Find other similar papers!
             </Button>
           </div>
         </div>

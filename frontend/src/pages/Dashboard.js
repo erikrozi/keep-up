@@ -76,7 +76,7 @@ function Dashboard() {
   };
 
   const handleSlideChange = (swiper) => {
-    if (swiper.activeIndex === swiper.slides.length - 2 && !isMoreLoading) {
+    if (swiper.activeIndex === swiper.slides.length - 2 && !isMoreLoading && userRecommendations.length > 0) {
       fetchMoreRecommendations();
     }
 

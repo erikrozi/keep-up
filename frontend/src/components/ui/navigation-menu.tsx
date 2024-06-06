@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu";
 import { cva } from "class-variance-authority";
-import { ChevronDown, ChevronDownCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 
 import { cn } from "../../utils";
 import logo from "../../assets/LogoAndNameBig.png"; // Import your logo image here
@@ -14,61 +14,100 @@ const NavigationMenu = React.forwardRef<
     user: { name: string; email: string };
     logout: () => void;
   }
->(({ className, children, user, logout, ...props }, ref) => (
-  <NavigationMenuPrimitive.Root
-    ref={ref}
-    style={{ backgroundColor: "rgba(0, 0, 0, 0.7)", height: "70px" }} // Black with 80% opacity
-    className={cn(
-      "relative z-10 w-full flex items-center justify-center",
-      className
-    )}
-    {...props}
-  >
-    {/* Logo image */}
-    <Link to="/dashboard" style={{ height: "100%", marginLeft: "20px", marginRight: "auto", display: "flex", alignItems: "center" }}>
-      <img
-        src={logo}
-        alt="Logo"
-        style={{ height: "100%" }}
-      />
-    </Link>
-    {children}
-    {/* Profile Section */}
-    <NavigationMenuPrimitive.Item className="ml-auto list-none">
-      <NavigationMenuPrimitive.Trigger
-        className={cn("flex flex-col items-center", navigationMenuTriggerStyle, "px-4")}
-      >
-        <img
-          src={profileImage}
-          alt="Profile"
-          className="h-10 w-10 rounded-full"
-        />
-        <ChevronDown
-          className="h-3 w-3 transition duration-200"
-          aria-hidden="true"
-          style={{ color: "white" }}
-        />
-      </NavigationMenuPrimitive.Trigger>
+>(({ className, children, user, logout, ...props }, ref) => {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = React.useState("");
 
-      <NavigationMenuPrimitive.Content
-        className={cn(
-          "origin-top-right absolute right-0 mt-1 w-48 rounded-md shadow-lg bg-white"
-        )}
-      >
-        <div className="block px-4 py-2 text-sm text-gray-700">
-          Logged in as {user.name} ({user.email})
-        </div>
-        <button
-          onClick={logout}
-          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-        >
-          Logout
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  return (
+    <NavigationMenuPrimitive.Root
+      ref={ref}
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.7)", height: "70px" }} // Black with 80% opacity
+      className={cn(
+        "relative z-10 w-full flex items-center justify-center",
+        className
+      )}
+      {...props}
+    >
+      {/* Logo image */}
+      <Link to="/dashboard" style={{ height: "100%", marginLeft: "20px", marginRight: "auto", display: "flex", alignItems: "center" }}>
+        <img
+          src={logo}
+          alt="Logo"
+          style={{ height: "100%" }}
+        />
+      </Link>
+
+      {/* Search bar with button */}
+      <form onSubmit={handleSearchSubmit} className="flex-1 px-4 flex items-center">
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-1/5 px-3 py-2 rounded-l-md text-sm bg-gray-100 text-black placeholder-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-600"
+        />
+        <button type="submit" className="px-4 py-2 bg-gray-600 text-white rounded-r-md text-sm hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-600">
+          Search
         </button>
-      </NavigationMenuPrimitive.Content>
-    </NavigationMenuPrimitive.Item>
-    {/* Additional viewport or other elements here if necessary */}
-  </NavigationMenuPrimitive.Root>
-));
+      </form>
+
+      {/* Dashboard link */}
+      <NavigationMenuPrimitive.Item className="list-none">
+        <NavigationMenuPrimitive.Trigger asChild>
+          <Link
+            to="/dashboard"
+            className="text-white group flex items-center justify-start rounded-md bg-transparent p-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none"
+          >
+            Dashboard
+          </Link>
+        </NavigationMenuPrimitive.Trigger>
+      </NavigationMenuPrimitive.Item>
+
+      {children}
+      {/* Profile Section */}
+      <NavigationMenuPrimitive.Item className="ml-auto list-none">
+        <NavigationMenuPrimitive.Trigger
+          className={cn("flex flex-col items-center", navigationMenuTriggerStyle, "px-4")}
+        >
+          <img
+            src={profileImage}
+            alt="Profile"
+            className="h-10 w-10 rounded-full"
+          />
+          <ChevronDown
+            className="h-3 w-3 transition duration-200"
+            aria-hidden="true"
+            style={{ color: "white" }}
+          />
+        </NavigationMenuPrimitive.Trigger>
+
+        <NavigationMenuPrimitive.Content
+          className={cn(
+            "origin-top-right absolute right-0 mt-1 w-48 rounded-md shadow-lg bg-white"
+          )}
+        >
+          <div className="block px-4 py-2 text-sm text-gray-700">
+            Logged in as {user.name} ({user.email})
+          </div>
+          <button
+            onClick={logout}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
+            Logout
+          </button>
+        </NavigationMenuPrimitive.Content>
+      </NavigationMenuPrimitive.Item>
+      {/* Additional viewport or other elements here if necessary */}
+    </NavigationMenuPrimitive.Root>
+  );
+});
 export default NavigationMenu;
 
 NavigationMenu.displayName = NavigationMenuPrimitive.Root.displayName;

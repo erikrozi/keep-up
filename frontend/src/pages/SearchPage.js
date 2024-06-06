@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { PaperContainer } from "../components/ui/paper-container.tsx";
 import {
   NavigationMenu,
@@ -15,7 +15,7 @@ import { supabase } from "../utils/supabase.ts";
 import useSupabaseUser from '../hooks/useSupabaseUser.ts';
 import api from "../utils/api.js";
 
-function DeepdivePage() {
+function SearchPage() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isRecommendationsLoading, setIsRecommendationsLoading] = useState(true);
   const [isMoreLoading, setIsMoreLoading] = useState(false);
@@ -26,15 +26,22 @@ function DeepdivePage() {
   const [recommendations, setRecommendations] = useState([]);
   const [paperData, setPaperData] = useState({});
 
-  const { corpus_id } = useParams();
+  function useQuery() {
+    return new URLSearchParams(useLocation().search);
+  }
+
+  let query = useQuery().get('q')
+
+  if (!query) {
+    navigate('/dashboard/');
+  }
 
   const fetchRecommendations = async () => {
     setIsRecommendationsLoading(true);
     try {
       // insert corpus id into url
-      const response = await api.get(`/users/deepdive/${corpus_id}`);  // Adjust this endpoint as needed
-      setRecommendations(response.data.recommendations);
-      setPaperData(response.data.paper_data);
+      const response = await api.get(`/search/${query}`);  // Adjust this endpoint as needed
+      setRecommendations(response.data);
     } catch (error) {
       console.error('Error fetching recommendations:', error);
       return <p>Error fetching recommendations: {error.message}</p>;
@@ -46,8 +53,8 @@ function DeepdivePage() {
   const fetchMoreRecommendations = async () => {
     setIsMoreLoading(true);
     try {
-      const response = await api.get(`/users/deepdive/${corpus_id}`);  // Adjust this endpoint as needed for pagination
-      setRecommendations(prev => [...prev, ...response.data.recommendations]);
+      const response = await api.get(`/search/${query}`);  // Adjust this endpoint as needed for pagination
+      setRecommendations(prev => [...prev, ...response.data]);
     } catch (error) {
       console.error('Error fetching more recommendations:', error);
     } finally {
@@ -57,7 +64,7 @@ function DeepdivePage() {
 
   useEffect(() => {
     fetchRecommendations();
-  }, [corpus_id]);
+  }, [query]);
 
   const logout = async () => {
     setIsLoggingOut(true);
@@ -105,7 +112,7 @@ function DeepdivePage() {
         </div>
         <div className="flex-grow flex flex-col items-center mx-2 md:mx-10">
           <div className="w-full flex flex-col items-center my-4 bg-white rounded-lg shadow-lg py-4 px-6">
-            <h1 className="text-xl md:text-2xl font-bold text-black text-center">Similar papers to: {paperData.title}</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-black text-center">Search Results for: {query}</h1>
           </div>
           <div className="w-full flex-grow">
             {isRecommendationsLoading ? (
@@ -160,4 +167,4 @@ function DeepdivePage() {
   );
 }
 
-export default DeepdivePage;
+export default SearchPage;

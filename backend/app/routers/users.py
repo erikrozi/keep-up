@@ -49,7 +49,7 @@ async def post_view(view: View, user: dict = Depends(verify_token)):
             "corpus_id": view.corpus_id,
             "timestamp": datetime.now().isoformat()
         }
-        response = supabase.table("viewed_papers").insert(view_data).execute()
+        response = supabase.table("viewed_papers").upsert(view_data).execute()
     except Exception as e:
         raise HTTPException(status_code=400, detail="Failed to add view to database")
     
