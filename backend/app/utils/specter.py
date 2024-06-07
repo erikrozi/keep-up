@@ -15,15 +15,22 @@ HEADERS = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
 
 
 def generate_specter_embedding(input: str):
-	for _ in range(5):
+	try:
+		payload = {"inputs": input, "options": {"wait_for_model": False}}
+		response = requests.post(API_URL, headers=HEADERS, json=payload)
+		response_json = response.json()
+		return response_json[0][0]
+	except Exception as e:
 		try:
-			payload = {"inputs": input, "wait_for_model": True}
+			start_time = time.time()
+			payload = {"inputs": input, "options": {"wait_for_model": True}}
 			response = requests.post(API_URL, headers=HEADERS, json=payload)
 			response_json = response.json()
+			end_time = time.time()
+			print(f"Time taken to generate SPECTER embedding: {end_time - start_time}")
 			return response_json[0][0]
-		except:
-			print("Error in generating SPECTER embedding. Trying again.")
-			time.sleep(2)
+		except Exception as e:
+			print(f"Error in generating SPECTER embedding. Error: {e}")
 	
 	try:
 		payload = {"inputs": input, "wait_for_model": True}
