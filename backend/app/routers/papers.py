@@ -53,8 +53,14 @@ async def read_papers(corpus_id: str):
 # get abstract summary
 @router.get("/{corpus_id}/summary")
 def get_abstract_summary(corpus_id: str):
-    abstract = get_abstract(corpus_id)
-    abstract_summary = create_abstract_summary(abstract)
+    abstract_response = supabase.table('paper_abstract').select('abstract_summary').eq('corpus_id', corpus_id).execute()
+    abstract_summary = abstract_response.data[0].get('abstract_summary') if abstract_response.data else None
+
+    if not abstract_summary:
+        abstract = get_abstract(corpus_id)
+        abstract_summary = create_abstract_summary(abstract)
+        # Optionally, save the generated summary back to the database
+        supabase.table('paper_abstract').update({'abstract_summary': abstract_summary}).eq('corpus_id', corpus_id).execute()
 
     result = {
         "corpus_id": corpus_id,
