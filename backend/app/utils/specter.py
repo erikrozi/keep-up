@@ -8,20 +8,30 @@ load_dotenv()
 
 
 HUGGINGFACE_API_KEY = os.getenv("HUGGINGFACE_API_KEY")
+API_URL = "https://api-inference.huggingface.co/models/allenai/specter2_base"
+
 HUGGINGFACE_INFERENCE_URL = os.getenv("HUGGINGFACE_INFERENCE_URL")
 HEADERS = {"Authorization": f"Bearer {HUGGINGFACE_API_KEY}"}
 
 
 def generate_specter_embedding(input: str):
-	for _ in range(3):
+	for _ in range(5):
 		try:
 			payload = {"inputs": input, "wait_for_model": True}
-			response = requests.post(HUGGINGFACE_INFERENCE_URL, headers=HEADERS, json=payload)
+			response = requests.post(API_URL, headers=HEADERS, json=payload)
 			response_json = response.json()
 			return response_json[0][0]
 		except:
 			print("Error in generating SPECTER embedding. Trying again.")
 			time.sleep(2)
+	
+	try:
+		payload = {"inputs": input, "wait_for_model": True}
+		response = requests.post(HUGGINGFACE_INFERENCE_URL, headers=HEADERS, json=payload)
+		response_json = response.json()
+		return response_json[0][0]
+	except:
+		print("Error in generating SPECTER embedding.")
 
 	
 def main():
