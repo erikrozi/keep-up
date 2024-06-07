@@ -6,11 +6,11 @@ import {
   NavigationMenuList,
 } from "../components/ui/navigation-menu.tsx";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Keyboard, Mousewheel } from "swiper/modules";
+import { Pagination, Keyboard, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/keyboard";
-import "swiper/css/mousewheel";
+import "swiper/css/navigation";
 import { supabase } from "../utils/supabase.ts";
 import useSupabaseUser from '../hooks/useSupabaseUser.ts';
 import api from "../utils/api.js";
@@ -115,17 +115,11 @@ function DeepdivePage() {
               </div>
             ) : (
               <Swiper
-                direction={"vertical"}
+                direction={"horizontal"}
                 slidesPerView={"auto"}
                 spaceBetween={50}
                 centeredSlides={true}
-                mousewheel={{
-                  enabled: true,
-                  forceToAxis: true,
-                  thresholdDelta: 10,
-                  thresholdTime: 10,
-                  invert: false,
-                }}
+                navigation={true}
                 keyboard={{
                   enabled: true,
                   onlyInViewport: false,
@@ -134,7 +128,7 @@ function DeepdivePage() {
                   dynamicBullets: true,
                   clickable: true,
                 }}
-                modules={[Pagination, Keyboard, Mousewheel]}
+                modules={[Pagination, Keyboard, Navigation]}
                 autoHeight={true}
                 onSlideChange={handleSlideChange}
               >
