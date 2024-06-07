@@ -1,13 +1,8 @@
 import Image from "next/image";
-
-// import { useEffect } from "react";
-
-// import AOS from "aos";
-// import "aos/dist/aos.css";
-// import landingTarget from "../../assets/LandingTarget.png";
-// import FeatImage01 from "@/public/images/features-03-image-01.png";
-// import FeatImage02 from "@/public/images/features-03-image-02.png";
-// import FeatImage03 from "@/public/images/features-03-image-03.png";
+import feed from "../../assets/Feed.mov";
+import inputPersonalized from "../../assets/InputInterests.mov";
+import interact from "../../assets/LikeAndInteract.mov";
+import VideoAutoPlay from "./VideoAutoPlay"; // Adjust the import path as necessary
 
 export default function Zigzag() {
   console.log("Rendering Zigzag");
@@ -38,13 +33,14 @@ export default function Zigzag() {
                 className="max-w-xl md:max-w-none md:w-full mx-auto md:col-span-5 lg:col-span-6 mb-8 md:mb-0 md:order-1"
                 data-aos="fade-up"
               >
-                {/* <Image
+                <VideoAutoPlay
                   className="max-w-full mx-auto md:max-w-none h-auto"
-                  src={landingTarget}
+                  src={inputPersonalized}
                   width={540}
                   height={405}
-                  alt="Features 01"
-                /> */}
+                  controls
+                  alt="Get recommended papers."
+                />
               </div>
               {/* Content */}
               <div
@@ -103,13 +99,14 @@ export default function Zigzag() {
                 className="max-w-xl md:max-w-none md:w-full mx-auto md:col-span-5 lg:col-span-6 mb-8 md:mb-0 rtl"
                 data-aos="fade-up"
               >
-                {/* <Image
+                <VideoAutoPlay
                   className="max-w-full mx-auto md:max-w-none h-auto"
-                  src={landingTarget}
+                  src={feed}
                   width={540}
                   height={405}
-                  alt="Features 02"
-                /> */}
+                  controls
+                  alt="Get recommended papers."
+                />
               </div>
               {/* Content */}
               <div
@@ -154,7 +151,7 @@ export default function Zigzag() {
                       >
                         <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
                       </svg>
-                      <span>Amet consectetur adipiscing elit</span>
+                      <span>See citations, authors, and key paper info</span>
                     </li>
                   </ul>
                 </div>
@@ -168,13 +165,14 @@ export default function Zigzag() {
                 className="max-w-xl md:max-w-none md:w-full mx-auto md:col-span-5 lg:col-span-6 mb-8 md:mb-0 md:order-1"
                 data-aos="fade-up"
               >
-                {/* <Image
+                <VideoAutoPlay
                   className="max-w-full mx-auto md:max-w-none h-auto"
-                  src={landingTarget}
+                  src={interact}
                   width={540}
                   height={405}
-                  alt="Features 03"
-                /> */}
+                  controls
+                  alt="Get recommended papers."
+                />
               </div>
               {/* Content */}
               <div
@@ -209,7 +207,7 @@ export default function Zigzag() {
                       >
                         <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
                       </svg>
-                      <span>Expand your knowledge base</span>
+                      <span>Search for related papers or keywords</span>
                     </li>
                     <li className="flex items-center">
                       <svg
@@ -219,7 +217,7 @@ export default function Zigzag() {
                       >
                         <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
                       </svg>
-                      <span>Make KeepUp's recommendations smarter</span>
+                      <span>Like and read more</span>
                     </li>
                   </ul>
                 </div>

@@ -48,67 +48,8 @@ const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
     setRelatedPapers(response.data);
   };
 
-  // const fetchAbstractImage = async (abstract) => {
-  //   console.log("Are you even trying to play fetch?");
-  //   try {
-  //     const response = await axios.post(
-  //       "https://api.openai.com/v1/images/generations",
-  //       {
-  //         prompt: `Generate a cartoon image that represents the central themes of the research based on the abstract included. DO NOT draw letters, language, text, or ANY words on the image itself--only present an artistic representation. Abstract:${abstract.substring(
-  //           0,
-  //           100
-  //         )}.`,
-  //         //prompt: "Generate an image of a dog",
-  //         model: "dall-e-3",
-  //         size: "1024x1024",
-  //         quality: "standard",
-  //         n: 1,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-  //     console.error("Success fetching abstract image");
-  //     console.log("API Response:", response.data); // Debugging log
-  //     setAbstractImage(response.data.data[0].url);
-  //   } catch (error) {
-  //     console.log("API Key:", process.env.REACT_APP_OPENAI_API_KEY); // Debugging log
-  //     console.error("Error fetching abstract image:", error);
-  //   }
-  // };
-
-  // const fetchAbstractImage = async (abstract) => {
-  //   console.log(
-  //     "Unsplash Access Key:",
-  //     process.env.REACT_APP_UNSPLASH_ACCESS_KEY
-  //   );
-  //   console.log("Fetching image for abstract");
-  //   try {
-  //     const response = await axios.get(
-  //       "https://api.unsplash.com/search/photos",
-  //       {
-  //         params: { query: abstract, per_page: 1 },
-  //         headers: {
-  //           Authorization: `Client-ID ${process.env.REACT_APP_UNSPLASH_ACCESS_KEY}`,
-  //         },
-  //       }
-  //     );
-  //     if (response.data.results && response.data.results.length > 0) {
-  //       setAbstractImage(response.data.results[0].urls.small);
-  //     } else {
-  //       console.error("No images found");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching abstract image:", error);
-  //   }
-  // };
-
   const fetchAbstractImage = async (fieldsOfStudy) => {
     console.log("Fetching image for fields of study:", fieldsOfStudy);
-    // console.log("Pixabay API Key:", process.env.REACT_APP_PIXABAY_API_KEY);
     try {
       const response = await axios.get("https://pixabay.com/api/", {
         params: {
@@ -434,7 +375,9 @@ const PaperContainer: React.FC<{ corpus_id: any; user: any }> = ({
                     className="mr-2 mb-2 bg-gray-200 hover:bg-gray-300 rounded-3xl py-2 px-4 text-xs sm:text-sm font-bold"
                   >
                     {paper.metadata.title.length > 100
-                      ? capitalizeTitle(paper.metadata.title.substring(0, 100)) + "..."
+                      ? capitalizeTitle(
+                          paper.metadata.title.substring(0, 100)
+                        ) + "..."
                       : capitalizeTitle(paper.metadata.title)}
                   </p>
                 ))}
