@@ -22,15 +22,15 @@ export function RegisterForm() {
   const [name, setName] = useState("");
   const navigate = useNavigate();
   
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (event === "SIGNED_IN") {
-      navigate("/personalInfo");
-    } else if (event === "SIGNED_OUT") {
-      navigate("/");
-    } else {
-      console.log("Unknown event:", event);
-    }
-  })
+  // supabase.auth.onAuthStateChange((event, session) => {
+  //   if (event === "SIGNED_IN") {
+  //     navigate("/personalInfo");
+  //   } else if (event === "SIGNED_OUT") {
+  //     navigate("/");
+  //   } else {
+  //     console.log("Unknown event:", event);
+  //   }
+  // })
 
   async function signUpNewUser() {
     const { data, error } = await supabase.auth.signUp({
