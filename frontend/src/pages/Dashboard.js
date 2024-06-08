@@ -6,11 +6,11 @@ import {
   NavigationMenuList,
 } from "../components/ui/navigation-menu.tsx";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Keyboard, Navigation } from "swiper/modules";
+import { Pagination, Keyboard, Mousewheel } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/keyboard";
-import "swiper/css/navigation";
+import "swiper/css/mousewheel";
 import { supabase } from "../utils/supabase.ts";
 import useSupabaseUser from '../hooks/useSupabaseUser';
 import api from "../utils/api";
@@ -105,7 +105,7 @@ function Dashboard() {
             <h2 className="text-2xl font-bold mb-4">Welcome to your feed!</h2>
             <p className="mb-4 font-bold">Here's how you can use this page:</p>
             <ul className="list-disc list-inside mb-4">
-              <li>Use arrow keys or keyboard to navigate through recommended papers.</li>
+              <li>Use arrow keys or scroll up and down to navigate through recommended papers.</li>
               <li>Double-click on a paper or press the like button to like a paper (This helps us recommend you better papers!)</li>
               <li>If you need more recommendations, simply swipe to the bottom to load more.</li>
               <li>Use the search bar to get recommendations on a specific topic.</li>
@@ -127,8 +127,8 @@ function Dashboard() {
             </NavigationMenuList>
           </NavigationMenu>
         </div>
-        <div className="flex-1 items-center justify-center">
-          <div className="flex flex-row justify-center items-center mx-2 my-2 md:mx-4 md:my-4 lg:mx-10 lg:my-10">
+        <div className="flex-grow">
+          <div className="flex flex-row justify-center items-center mx-2 my-2 md:mx-10 md:my-10">
             {isRecommendationsLoading ? (
               <div className="flex flex-col align-middle justify-center items-center rounded-lg p-6 h-screen overflow-auto">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-black"></div>
@@ -136,10 +136,17 @@ function Dashboard() {
               </div>
             ) : (
               <Swiper
-                direction={"horizontal"}
+                direction={"vertical"}
                 slidesPerView={"auto"}
                 spaceBetween={50}
                 centeredSlides={true}
+                mousewheel={{
+                  enabled: true,
+                  forceToAxis: true,
+                  thresholdDelta: 10,
+                  thresholdTime: 10,
+                  invert: false,
+                }}
                 keyboard={{
                   enabled: true,
                   onlyInViewport: false,
@@ -148,8 +155,7 @@ function Dashboard() {
                   dynamicBullets: true,
                   clickable: true,
                 }}
-                navigation={true}
-                modules={[Pagination, Keyboard, Navigation]}
+                modules={[Pagination, Keyboard, Mousewheel]}
                 autoHeight={true}
                 onSlideChange={handleSlideChange}
               >

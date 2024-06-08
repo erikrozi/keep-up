@@ -6,11 +6,11 @@ import {
   NavigationMenuList,
 } from "../components/ui/navigation-menu.tsx";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Keyboard, Navigation } from "swiper/modules";
+import { Pagination, Keyboard, Mousewheel } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/keyboard";
-import "swiper/css/navigation";
+import "swiper/css/mousewheel";
 import { supabase } from "../utils/supabase.ts";
 import useSupabaseUser from '../hooks/useSupabaseUser.ts';
 import api from "../utils/api.js";
@@ -122,11 +122,17 @@ function SearchPage() {
               </div>
             ) : (
               <Swiper
-                direction={"horizontal"}
+                direction={"vertical"}
                 slidesPerView={"auto"}
                 spaceBetween={50}
                 centeredSlides={true}
-                navigation={true}
+                mousewheel={{
+                  enabled: true,
+                  forceToAxis: true,
+                  thresholdDelta: 10,
+                  thresholdTime: 10,
+                  invert: false,
+                }}
                 keyboard={{
                   enabled: true,
                   onlyInViewport: false,
@@ -135,7 +141,7 @@ function SearchPage() {
                   dynamicBullets: true,
                   clickable: true,
                 }}
-                modules={[Pagination, Keyboard, Navigation]}
+                modules={[Pagination, Keyboard, Mousewheel]}
                 autoHeight={true}
                 onSlideChange={handleSlideChange}
               >
